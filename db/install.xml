@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/integrationhub/db" VERSION="2026021600" COMMENT="XMLDB file for Moodle local/integrationhub"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+
+    <!-- Registered external services -->
+    <TABLE NAME="local_integrationhub_svc" COMMENT="Registered external services for Integration Hub">
+      <FIELDS>
+        <FIELD NAME="id"                 TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name"               TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Unique service name (slug)"/>
+        <FIELD NAME="base_url"           TYPE="char" LENGTH="1333" NOTNULL="true" COMMENT="Base URL of the service"/>
+        <FIELD NAME="auth_type"          TYPE="char" LENGTH="20"  NOTNULL="true" DEFAULT="bearer" COMMENT="bearer or apikey"/>
+        <FIELD NAME="auth_token"         TYPE="text" NOTNULL="false" COMMENT="Token or API key (encrypted)"/>
+        <FIELD NAME="timeout"            TYPE="int"  LENGTH="5"  NOTNULL="true" DEFAULT="5" COMMENT="Request timeout in seconds"/>
+        <FIELD NAME="max_retries"        TYPE="int"  LENGTH="3"  NOTNULL="true" DEFAULT="3" COMMENT="Maximum retry attempts"/>
+        <FIELD NAME="retry_backoff"      TYPE="int"  LENGTH="5"  NOTNULL="true" DEFAULT="1" COMMENT="Initial backoff seconds (exponential)"/>
+        <FIELD NAME="cb_failure_threshold" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="5" COMMENT="Failures before circuit opens"/>
+        <FIELD NAME="cb_cooldown"        TYPE="int"  LENGTH="5"  NOTNULL="true" DEFAULT="30" COMMENT="Seconds before half-open test"/>
+        <FIELD NAME="response_queue"     TYPE="char" LENGTH="255" NOTNULL="false" COMMENT="AMQP response queue name for inbound consumer"/>
+        <FIELD NAME="enabled"            TYPE="int"  LENGTH="1"  NOTNULL="true" DEFAULT="1" COMMENT="1=active, 0=disabled"/>
+        <FIELD NAME="timecreated"        TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified"       TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_name" UNIQUE="true" FIELDS="name"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Circuit breaker state per service -->
+    <TABLE NAME="local_integrationhub_cb" COMMENT="Circuit breaker state per service">
+      <FIELDS>
+        <FIELD NAME="id"             TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="serviceid"      TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="state"          TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="closed" COMMENT="closed, open, halfopen"/>
+        <FIELD NAME="failure_count"  TYPE="int"  LENGTH="5"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="last_failure"   TYPE="int"  LENGTH="10" NOTNULL="false" COMMENT="Timestamp of last failure"/>
+        <FIELD NAME="timemodified"   TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_serviceid" TYPE="foreign-unique" FIELDS="serviceid" REFTABLE="local_integrationhub_svc" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <!-- Request log entries -->
+    <TABLE NAME="local_integrationhub_log" COMMENT="Log of all HTTP requests made through the Gateway">
+      <FIELDS>
+        <FIELD NAME="id"             TYPE="int"  LENGTH="10"   NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="serviceid"      TYPE="int"  LENGTH="10"   NOTNULL="true"/>
+        <FIELD NAME="endpoint"       TYPE="char" LENGTH="1333" NOTNULL="true"/>
+        <FIELD NAME="http_method"    TYPE="char" LENGTH="10"   NOTNULL="true" DEFAULT="POST"/>
+        <FIELD NAME="http_status"    TYPE="int"  LENGTH="5"    NOTNULL="false" COMMENT="Response HTTP status code"/>
+        <FIELD NAME="latency_ms"     TYPE="int"  LENGTH="10"   NOTNULL="false" COMMENT="Response time in milliseconds"/>
+        <FIELD NAME="attempt_count"  TYPE="int"  LENGTH="3"    NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="success"        TYPE="int"  LENGTH="1"    NOTNULL="true" DEFAULT="1" COMMENT="1=success, 0=failure"/>
+        <FIELD NAME="error_message"  TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="timecreated"    TYPE="int"  LENGTH="10"   NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="direction"      TYPE="char" LENGTH="10"   NOTNULL="true" DEFAULT="outbound" COMMENT="outbound or inbound"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_serviceid" TYPE="foreign" FIELDS="serviceid" REFTABLE="local_integrationhub_svc" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_timecreated" UNIQUE="false" FIELDS="timecreated"/>
+        <INDEX NAME="ix_serviceid_time" UNIQUE="false" FIELDS="serviceid,timecreated"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Event Bridge Rules -->
+    <TABLE NAME="local_integrationhub_rules" COMMENT="Rules mapping Moodle events to external services">
+      <FIELDS>
+        <FIELD NAME="id"               TYPE="int"  LENGTH="10"  NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="eventname"        TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Full class name of the event"/>
+        <FIELD NAME="serviceid"        TYPE="int"  LENGTH="10"  NOTNULL="true"/>
+        <FIELD NAME="endpoint"         TYPE="char" LENGTH="255" NOTNULL="false" COMMENT="Optional override of service base endpoint"/>
+        <FIELD NAME="payload_template" TYPE="text" NOTNULL="false" COMMENT="JSON template with placeholders"/>
+        <FIELD NAME="enabled"          TYPE="int"  LENGTH="1"   NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="timecreated"      TYPE="int"  LENGTH="10"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified"     TYPE="int"  LENGTH="10"  NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_serviceid" TYPE="foreign" FIELDS="serviceid" REFTABLE="local_integrationhub_svc" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_eventname" UNIQUE="false" FIELDS="eventname"/>
+        <INDEX NAME="ix_enabled" UNIQUE="false" FIELDS="enabled"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Dead Letter Queue (DLQ) -->
+    <TABLE NAME="local_integrationhub_dlq" COMMENT="Stores failed integration events for review and replay">
+      <FIELDS>
+        <FIELD NAME="id"             TYPE="int"  LENGTH="10"  NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="eventname"      TYPE="char" LENGTH="255" NOTNULL="true"/>
+        <FIELD NAME="serviceid"      TYPE="int"  LENGTH="10"  NOTNULL="true"/>
+        <FIELD NAME="payload"        TYPE="text" NOTNULL="false" COMMENT="JSON payload that failed to deliver"/>
+        <FIELD NAME="error_message"  TYPE="text" NOTNULL="false"/>
+        <FIELD NAME="timecreated"    TYPE="int"  LENGTH="10"  NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_serviceid_dlq" TYPE="foreign" FIELDS="serviceid" REFTABLE="local_integrationhub_svc" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_eventname_dlq" UNIQUE="false" FIELDS="eventname"/>
+        <INDEX NAME="ix_timecreated_dlq" UNIQUE="false" FIELDS="timecreated"/>
+      </INDEXES>
+    </TABLE>
+
+  </TABLES>
+</XMLDB>
