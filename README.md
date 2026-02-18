@@ -19,9 +19,20 @@ A centralized integration layer for Moodle — connect any Moodle event to any e
 - **Monitoring:** Real-time dashboard for success rates and latency.
 - **Transports:** REST, AMQP (RabbitMQ), SOAP.
 
-## 📖 Documentation
+---
 
-Full technical documentation is available in [mih.mrjacket.dev](mih.mrjacket.dev)
+## 📚 Documentation
+
+> [!IMPORTANT]
+> All project specifications, architecture diagrams, and API references are hosted at:
+> ### 🔗 [mih.mrjacket.dev](https://mih.mrjacket.dev)
+
+| Language | Status | Link |
+| :--- | :--- | :--- |
+| **English** 🇬🇧 | ![Documentation](https://img.shields.io/badge/docs-latest-blue) | [Read here](https://mih.mrjacket.dev/en) |
+| **Español** 🇪🇸 | ![Documentación](https://img.shields.io/badge/docs-actualizado-green) | [Leer aquí](https://mih.mrjacket.dev/es) |
+
+---
 
 ## Quick Start
 
