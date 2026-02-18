@@ -208,13 +208,17 @@ else {
             // View Payload Button (Pending/Failed Tasks).
             // We extract eventdata from customdata.
             $cdata = json_decode($task->customdata);
-            $payload_view = isset($cdata->eventdata) ? json_encode($cdata->eventdata, JSON_PRETTY_PRINT) : '{}';
+            $payload_data = $cdata->eventdata ?? $cdata; // Fallback to full customdata if eventdata is missing.
+            $payload_view = json_encode($payload_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            if ($payload_view === false) {
+                $payload_view = json_last_error_msg();
+            }
 
             echo html_writer::tag('button', '<i class="fa fa-code"></i>', [
                 'class' => 'btn btn-sm btn-info me-1 ih-view-payload',
                 'type' => 'button',
                 'title' => get_string('view_payload', 'local_integrationhub'),
-                'data-payload' => s($payload_view), // s() escapes HTML entities safely
+                'data-payload' => $payload_view, // s() escapes HTML entities safely
                 'data-title' => get_string('payload_source', 'local_integrationhub') . ': ' . s($task->eventname)
             ]);
 
