@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -47,7 +46,7 @@ if ($action === 'clearlogs' && has_capability('local/integrationhub:manage', $co
     }
     if ($status === 'success') {
         $conditions['success'] = 1;
-    } elseif ($status === 'failure') {
+    } else if ($status === 'failure') {
         $conditions['success'] = 0;
     }
 
@@ -85,7 +84,7 @@ if ($serviceid > 0) {
 }
 if ($status === 'success') {
     $where[] = 'l.success = 1';
-} elseif ($status === 'failure') {
+} else if ($status === 'failure') {
     $where[] = 'l.success = 0';
 }
 
@@ -270,7 +269,7 @@ if (empty($logs)) {
         $statclass = '';
         if ($log->http_status >= 200 && $log->http_status < 300) {
             $statclass = 'text-success fw-bold';
-        } elseif ($log->http_status >= 400) {
+        } else if ($log->http_status >= 400) {
             $statclass = 'text-danger fw-bold';
         }
         echo html_writer::tag('td', html_writer::tag('span', $log->http_status ?? '—', ['class' => $statclass]));

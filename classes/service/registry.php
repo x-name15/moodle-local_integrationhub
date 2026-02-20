@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -40,8 +39,7 @@ class registry
      * @param string $name The service name.
      * @return \stdClass|false The service record, or false if not found.
      */
-    public static function get_service(string $name)
-    {
+    public static function get_service(string $name) {
         global $DB;
         return $DB->get_record(self::TABLE, ['name' => $name]);
     }

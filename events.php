@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -84,8 +83,7 @@ echo html_writer::tag('h4', get_string('latest_events_title', 'local_integration
 
 if (empty($logs)) {
     echo html_writer::div(get_string('no_events_logged', 'local_integrationhub'), 'alert alert-info');
-}
-else {
+} else {
     echo html_writer::start_tag('div', ['class' => 'table-responsive']);
     echo html_writer::start_tag('table', ['class' => 'table table-hover table-striped']);
 
@@ -141,8 +139,7 @@ else {
             if (!$text && $log->http_method === 'AMQP') {
                 $text = 'OK';
             }
-        }
-        else {
+        } else {
             $statusclass = 'text-danger fw-bold';
             if (!$text) {
                 $text = 'ERR';

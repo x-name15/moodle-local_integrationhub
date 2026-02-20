@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -30,8 +29,7 @@
  *
  * @param global_navigation $navigation The global navigation object.
  */
-function local_integrationhub_extend_navigation(global_navigation $navigation)
-{
+function local_integrationhub_extend_navigation(global_navigation $navigation) {
     global $PAGE;
 
     $context = context_system::instance();

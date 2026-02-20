@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -28,7 +27,7 @@ require(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
 
 // Define expected options and their defaults
-list($options, $unrecognized) = cli_get_params(
+[$options, $unrecognized] = cli_get_params(
 ['name' => '', 'help' => false],
 ['h' => 'help']
 );

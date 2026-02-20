@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -46,8 +45,7 @@ if ($canmanage && !empty($action) && confirm_sesskey()) {
     if ($action === 'retry' && $taskid > 0) {
         if (\local_integrationhub\task\queue_manager::retry_task($taskid)) {
             \core\notification::success(get_string('task_retried', 'local_integrationhub'));
-        }
-        else {
+        } else {
             \core\notification::error(get_string('task_retry_failed', 'local_integrationhub'));
         }
         redirect($PAGE->url);
@@ -56,8 +54,7 @@ if ($canmanage && !empty($action) && confirm_sesskey()) {
     if ($action === 'deletetask' && $taskid > 0) {
         if (\local_integrationhub\task\queue_manager::delete_task($taskid)) {
             \core\notification::success(get_string('task_deleted', 'local_integrationhub'));
-        }
-        else {
+        } else {
             \core\notification::error(get_string('task_delete_failed', 'local_integrationhub'));
         }
         redirect($PAGE->url);
@@ -83,8 +80,7 @@ if ($canmanage && !empty($action) && confirm_sesskey()) {
                 \core\task\manager::queue_adhoc_task($task);
                 $DB->delete_records('local_integrationhub_dlq', ['id' => $dlqid]);
                 \core\notification::success(get_string('dlq_replayed', 'local_integrationhub'));
-            }
-            else {
+            } else {
                 \core\notification::error('Rule not found for this event.');
             }
         }
@@ -160,8 +156,7 @@ if ($canmanage && $hasorphans) {
 
 if (empty($tasks)) {
     echo html_writer::div(get_string('no_pending_tasks', 'local_integrationhub'), 'alert alert-success');
-}
-else {
+} else {
     echo html_writer::start_tag('div', ['class' => 'table-responsive mb-5']);
     // Force text-dark to avoid theme white-text issues
     echo html_writer::start_tag('table', ['class' => 'table table-striped table-hover', 'style' => 'color: #212529 !important;']);
@@ -261,8 +256,7 @@ echo html_writer::tag('p', get_string('dlq_desc', 'local_integrationhub'), ['cla
 
 if (empty($dlqitems)) {
     echo html_writer::div(get_string('no_dlq_items', 'local_integrationhub'), 'alert alert-info');
-}
-else {
+} else {
     echo html_writer::start_tag('div', ['class' => 'table-responsive']);
     echo html_writer::start_tag('table', ['class' => 'table table-striped table-hover', 'style' => 'color: #212529 !important;']);
     echo '<thead class="table-dark"><tr>';

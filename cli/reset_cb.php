@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -32,7 +31,7 @@ use local_integrationhub\service\registry;
 use local_integrationhub\service\circuit_breaker;
 
 // Options
-list($options, $unrecognized) = cli_get_params([
+[$options, $unrecognized] = cli_get_params([
     'service' => '',
     'help' => false,
 ], [

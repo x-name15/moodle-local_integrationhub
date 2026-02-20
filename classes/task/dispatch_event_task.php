@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -34,8 +33,7 @@ class dispatch_event_task extends \core\task\adhoc_task
     /**
      * Execute the task.
      */
-    public function execute()
-    {
+    public function execute() {
         global $DB;
 
         $data = $this->get_custom_data();
@@ -62,8 +60,7 @@ class dispatch_event_task extends \core\task\adhoc_task
         if (empty($template)) {
             // Default payload is raw event data if no template provided.
             $payload = $eventdata;
-        }
-        else {
+        } else {
             $json = $template;
             // Simple string replacement for now. Flatten event data for easy access.
             // e.g. {{objectid}}, {{userid}}, {{courseid}}.
@@ -74,7 +71,7 @@ class dispatch_event_task extends \core\task\adhoc_task
                         // Escape for JSON string context (removes surrounding quotes from json_encode).
                         $replacement = substr(json_encode($value), 1, -1);
                     }
-                    elseif (is_bool($value)) {
+                    else if (is_bool($value)) {
                         $replacement = $value ? 'true' : 'false';
                     }
                     $json = str_replace('{{' . $key . '}}', $replacement, $json);
@@ -92,10 +89,9 @@ class dispatch_event_task extends \core\task\adhoc_task
         if (isset($service->type) && $service->type === 'amqp') {
             $method = 'AMQP';
         }
-        elseif (!empty($rule->http_method)) {
+        else if (!empty($rule->http_method)) {
             $method = $rule->http_method;
-        }
-        else {
+        } else {
             $method = 'POST';
         }
 
@@ -115,15 +111,13 @@ class dispatch_event_task extends \core\task\adhoc_task
             if ($response->is_ok()) {
                 $statusstr = $response->httpstatus ? "HTTP {$response->httpstatus}" : "OK";
                 mtrace("Success: {$statusstr}");
-            }
-            else {
+            } else {
                 mtrace("Failed: HTTP {$response->httpstatus} - {$response->error}");
                 mtrace("Response Body: " . $response->body);
                 // If the gateway fails after its own internal retries, we throw to let Moodle retry the task.
                 throw new \moodle_exception('gateway_error', 'local_integrationhub', '', $response->error);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             mtrace("Exception: " . $e->getMessage());
 
             // Track attempts.
@@ -150,8 +144,7 @@ class dispatch_event_task extends \core\task\adhoc_task
      * @param array     $payload  The payload (templated or raw).
      * @param string    $error    The error message.
      */
-    protected function move_to_dlq($rule, $payload, $error)
-    {
+    protected function move_to_dlq($rule, $payload, $error) {
         global $DB;
         $dlq = new \stdClass();
         $dlq->eventname = $rule->eventname;

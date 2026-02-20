@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -43,8 +42,7 @@ class webhook_received extends \core\event\base
     /**
      * Initialise event properties.
      */
-    protected function init()
-    {
+    protected function init() {
         $this->data['crud'] = 'r';
         $this->data['edulevel'] = self::LEVEL_OTHER;
     }
@@ -54,8 +52,7 @@ class webhook_received extends \core\event\base
      *
      * @return string
      */
-    public static function get_name()
-    {
+    public static function get_name() {
         return get_string('webhook_received', 'local_integrationhub');
     }
 
@@ -64,8 +61,7 @@ class webhook_received extends \core\event\base
      *
      * @return string
      */
-    public function get_description()
-    {
+    public function get_description() {
         $servicename = $this->other['servicename'] ?? 'unknown';
         $source = $this->other['source'] ?? 'unknown';
         return "Inbound {$source} received from service '{$servicename}'.";
@@ -74,8 +70,7 @@ class webhook_received extends \core\event\base
     /**
      * Custom validation.
      */
-    protected function validate_data()
-    {
+    protected function validate_data() {
         parent::validate_data();
         if (!isset($this->other['serviceid'])) {
             throw new \coding_exception('The \'serviceid\' value must be set in other.');

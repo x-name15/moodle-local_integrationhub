@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -63,8 +62,7 @@ class mih_response
         ?string $error,
         int $latencyms,
         int $attempts
-        )
-    {
+        ) {
         $this->success = $success;
         $this->httpstatus = $httpstatus;
         $this->body = $body;
@@ -80,8 +78,7 @@ class mih_response
      * @return mixed Decoded JSON data.
      * @throws \coding_exception If body is not valid JSON.
      */
-    public function json(bool $assoc = true)
-    {
+    public function json(bool $assoc = true) {
         if ($this->body === null) {
             return null;
         }

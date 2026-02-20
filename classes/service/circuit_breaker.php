@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -60,8 +59,7 @@ class circuit_breaker
      * @param int $failurethreshold Failures before circuit opens.
      * @param int $cooldown Seconds to wait before half-open.
      */
-    public function __construct(int $serviceid, int $failurethreshold = 5, int $cooldown = 30)
-    {
+    public function __construct(int $serviceid, int $failurethreshold = 5, int $cooldown = 30) {
         $this->serviceid = $serviceid;
         $this->failurethreshold = $failurethreshold;
         $this->cooldown = $cooldown;

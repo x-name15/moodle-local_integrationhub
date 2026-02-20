@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -162,12 +161,10 @@ class mih
 
             if ($success) {
                 $cb->record_success();
-            }
-            else {
+            } else {
                 $cb->record_failure();
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $cb->record_failure();
             $error = $e->getMessage();
             $success = false;
@@ -257,8 +254,7 @@ class mih
                     $DB->delete_records_select(self::LOG_TABLE, 'timecreated < ?', [$cutoff]);
                 }
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             // Don't let logging failures break the request flow.
             debugging('Integration Hub: Failed to log request: ' . $e->getMessage(), DEBUG_DEVELOPER);
         }
@@ -267,7 +263,6 @@ class mih
     /**
      * Private constructor — use instance() instead.
      */
-    private function __construct()
-    {
+    private function __construct() {
     }
 }

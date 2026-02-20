@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -66,8 +65,7 @@ if ($action === 'preview_payload') {
             'error' => json_last_error_msg(),
             'raw' => $json
         ]);
-    }
-    else {
+    } else {
         echo json_encode([
             'success' => true,
             'payload' => $decoded,

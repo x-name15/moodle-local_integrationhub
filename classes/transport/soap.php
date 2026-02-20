@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -70,11 +69,9 @@ class soap implements contract
             $responsejson = json_encode($response);
 
             return $this->success_result($responsejson, $starttime, $attempts, 200);
-        }
-        catch (\SoapFault $e) {
+        } catch (\SoapFault $e) {
             return $this->error_result('SOAP Fault: ' . $e->getMessage(), $starttime, $attempts, 500);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return $this->error_result('SOAP Error: ' . $e->getMessage(), $starttime, $attempts, 500);
         }
     }

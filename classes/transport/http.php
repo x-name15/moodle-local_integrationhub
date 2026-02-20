@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -50,7 +49,7 @@ class http implements contract
             if ($service->auth_type === 'bearer') {
                 $headers[] = 'Authorization: Bearer ' . $service->auth_token;
             }
-            elseif ($service->auth_type === 'apikey') {
+            else if ($service->auth_type === 'apikey') {
                 $headers[] = 'X-API-Key: ' . $service->auth_token;
             }
         }
@@ -107,12 +106,10 @@ class http implements contract
 
             if ($success) {
                 return $this->success_result($resp, $starttime, $attempts, $httpcode);
-            }
-            else {
+            } else {
                 return $this->error_result("HTTP {$httpcode}", $starttime, $attempts, $httpcode);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return $this->error_result($e->getMessage(), $starttime, $attempts, 0);
         }
     }

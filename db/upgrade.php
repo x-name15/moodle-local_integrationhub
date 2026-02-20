@@ -8,8 +8,7 @@ defined('MOODLE_INTERNAL') || die();
  * @param int $oldversion The version we are upgrading from.
  * @return bool Result
  */
-function xmldb_local_integrationhub_upgrade($oldversion)
-{
+function xmldb_local_integrationhub_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();

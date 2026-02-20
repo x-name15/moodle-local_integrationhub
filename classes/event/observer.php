@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -35,8 +34,7 @@ class observer
      *
      * @param \core\event\base $event The Moodle event.
      */
-    public static function handle_event(\core\event\base $event)
-    {
+    public static function handle_event(\core\event\base $event) {
         global $DB;
         $eventname = $event->eventname; // E.g., \core\event\user_created.
         $rules = $DB->get_records('local_integrationhub_rules', [

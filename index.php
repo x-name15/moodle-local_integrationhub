@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -608,7 +607,7 @@ echo '</div>'; // .row (Connection)
             $typeclass = 'badge bg-secondary';
             if (($svc->type ?? 'rest') === 'amqp') {
                 $typeclass = 'badge bg-info text-dark';
-            } elseif (($svc->type ?? 'rest') === 'soap') {
+            } else if (($svc->type ?? 'rest') === 'soap') {
                 $typeclass = 'badge bg-warning text-dark';
             }
             echo html_writer::tag('td', html_writer::tag('span', $typelabel, ['class' => $typeclass]));
@@ -622,7 +621,7 @@ echo '</div>'; // .row (Connection)
             $cbclass = 'badge bg-success';
             if ($svc->circuit_state_raw === 'open') {
                 $cbclass = 'badge bg-danger';
-            } elseif ($svc->circuit_state_raw === 'halfopen') {
+            } else if ($svc->circuit_state_raw === 'halfopen') {
                 $cbclass = 'badge bg-warning text-dark';
             }
             echo html_writer::tag('td', html_writer::tag('span', $svc->circuit_state, ['class' => $cbclass]));

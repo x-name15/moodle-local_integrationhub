@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -45,16 +44,14 @@ class consume_responses_task extends \core\task\scheduled_task
      *
      * @return string
      */
-    public function get_name()
-    {
+    public function get_name() {
         return get_string('task_consume_responses', 'local_integrationhub');
     }
 
     /**
      * Execute the task.
      */
-    public function execute()
-    {
+    public function execute() {
         global $DB;
 
         // Get all AMQP services with a response_queue configured.

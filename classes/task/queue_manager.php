@@ -18,8 +18,7 @@ class queue_manager
      *
      * @return array List of task objects with expanded custom data.
      */
-    public static function get_pending_tasks()
-    {
+    public static function get_pending_tasks() {
         global $DB;
 
         // Fetch adhoc tasks for our specific class.
@@ -53,8 +52,7 @@ class queue_manager
      * @param int $taskid The adhoc task ID.
      * @return bool True on success.
      */
-    public static function retry_task($taskid)
-    {
+    public static function retry_task($taskid) {
         global $DB;
 
         $task = $DB->get_record('task_adhoc', [
@@ -110,13 +108,12 @@ class queue_manager
             $purge = false;
             if ($ruleid <= 0) {
                 $purge = true;
-            }
-            else {
+            } else {
                 $rule = $DB->get_record('local_integrationhub_rules', ['id' => $ruleid]);
                 if (!$rule) {
                     $purge = true;
                 }
-                elseif (!$DB->record_exists('local_integrationhub_svc', ['id' => $rule->serviceid])) {
+                else if (!$DB->record_exists('local_integrationhub_svc', ['id' => $rule->serviceid])) {
                     // Rule exists but service is gone.
                     $purge = true;
                 }

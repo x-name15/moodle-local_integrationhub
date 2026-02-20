@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -107,8 +106,7 @@ class amqp implements contract
 
             $target = empty($exchange) ? "DefEx -> RK:{$routingkey}" : "Ex:{$exchange} -> RK:{$routingkey}";
             return $this->success_result("Published to {$target}", $starttime, $attempts, 0);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return $this->error_result('AMQP Error: ' . $e->getMessage(), $starttime, $attempts);
         }
     }

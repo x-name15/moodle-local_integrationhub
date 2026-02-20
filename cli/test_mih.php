@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -38,17 +37,14 @@ mtrace("---------------------------------------------------");
 try {
     mtrace("1. Testing mih::request('test-service')...");
     \local_integrationhub\mih::request('test-service-static', '/api', ['a' => 1]);
-}
-catch (\moodle_exception $e) {
+} catch (\moodle_exception $e) {
     // We expect service_not_found if it doesn't exist.
     if ($e->errorcode === 'service_not_found') {
         mtrace("   [PASS] MIH handled request directly (Service check failed as expected).");
-    }
-    else {
+    } else {
         mtrace("   [FAIL] Unexpected error: " . $e->getMessage());
     }
-}
-catch (\Exception $e) {
+} catch (\Exception $e) {
     mtrace("   [FAIL] Exception: " . $e->getMessage());
 }
 
@@ -60,16 +56,13 @@ try {
         ->with(['b' => 2])
         ->method('PUT')
         ->dispatch();
-}
-catch (\moodle_exception $e) {
+} catch (\moodle_exception $e) {
     if ($e->errorcode === 'service_not_found') {
         mtrace("   [PASS] Fluent chain executed correctly via MIH.");
-    }
-    else {
+    } else {
         mtrace("   [FAIL] Unexpected error: " . $e->getMessage());
     }
-}
-catch (\Error $e) {
+} catch (\Error $e) {
     mtrace("   [FAIL] PHP Error (Interface mismatch?): " . $e->getMessage());
 }
 

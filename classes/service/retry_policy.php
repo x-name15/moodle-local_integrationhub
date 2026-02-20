@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -40,8 +39,7 @@ class retry_policy
      * @param int $maxretries Maximum retry attempts.
      * @param int $backoffseconds Initial backoff delay in seconds (doubles each retry).
      */
-    public function __construct(int $maxretries = 3, int $backoffseconds = 1)
-    {
+    public function __construct(int $maxretries = 3, int $backoffseconds = 1) {
         $this->maxretries = max(0, $maxretries);
         $this->backoffseconds = max(1, $backoffseconds);
     }
@@ -70,16 +68,14 @@ class retry_policy
      * @return mixed The result of the successful operation.
      * @throws \Exception The last exception if all attempts fail.
      */
-    public function execute(callable $operation)
-    {
+    public function execute(callable $operation) {
         $lastexception = null;
         $attempts = $this->maxretries + 1; // Plus 1 for the initial attempt.
 
         for ($attempt = 0; $attempt < $attempts; $attempt++) {
             try {
                 return $operation($attempt);
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $lastexception = $e;
 
                 // Don't sleep after the last attempt.

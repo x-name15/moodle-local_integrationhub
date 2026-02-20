@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -277,7 +276,7 @@ if (empty($rules)) {
         $svc = $services[$rule->serviceid] ?? null;
         if ($svc && isset($svc->type) && $svc->type === 'amqp') {
             echo '<td><span class="badge bg-warning text-dark">AMQP</span></td>';
-        } elseif ($svc && isset($svc->type) && $svc->type === 'soap') {
+        } else if ($svc && isset($svc->type) && $svc->type === 'soap') {
             echo '<td><span class="badge bg-secondary">SOAP</span></td>';
         } else {
             // Default to REST method (blue).

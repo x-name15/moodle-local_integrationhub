@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -47,8 +46,7 @@ class mih_request
      *
      * @param string $service Service slug.
      */
-    public function __construct(string $service)
-    {
+    public function __construct(string $service) {
         $this->service = $service;
     }
 
