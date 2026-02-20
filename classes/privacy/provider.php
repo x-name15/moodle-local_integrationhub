@@ -24,29 +24,28 @@
 
 namespace local_integrationhub\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Privacy provider for the Integration Hub plugin.
+ *
+ * The Integration Hub does not store personal user data directly.
+ * It acts as a gateway and only logs technical data required for
+ * monitoring integrations. The administrator is responsible for
+ * configuring compliant external integrations.
+ *
+ * @package    local_integrationhub
+ * @copyright  2026 Integration Hub Contributors
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\provider
+class provider implements \core_privacy\local\metadata\null_provider
 {
 
     /**
-     * Returns meta data about this system.
+     * Get the language string identifier with a description of what data this plugin stores.
      *
-     * @param   \core_privacy\local\metadata\collection $collection The initialised collection to add items to.
-     * @return  \core_privacy\local\metadata\collection     A listing of user data stored through this system.
+     * @return string The language string identifier.
      */
-    public static function get_metadata(\core_privacy\local\metadata\collection $collection): \core_privacy\local\metadata\collection
+    public static function get_reason(): string
     {
-        // The integrationhub does not store personal personal user data directly.
-        // It acts as a gateway and only logs technical data required for monitoring integrations.
-        // The administrator is responsible for configuring compliant external integrations.
-        return $collection->add_plugin_metadata(
-            'local_integrationhub',
-            'privacy:metadata',
-            null
-        );
+        return 'privacy:metadata';
     }
 }
