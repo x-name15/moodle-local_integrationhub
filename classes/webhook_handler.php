@@ -48,48 +48,50 @@ class webhook_handler
         try {
             // 1. Log the inbound request.
             $log = new \stdClass();
-            $log->serviceid     = $service->id;
-            $log->endpoint      = $source;
-            $log->http_method   = 'INBOUND';
-            $log->http_status   = null;
-            $log->latency_ms    = 0;
+            $log->serviceid = $service->id;
+            $log->endpoint = $source;
+            $log->http_method = 'INBOUND';
+            $log->http_status = null;
+            $log->latency_ms = 0;
             $log->attempt_count = 1;
-            $log->success       = 1;
+            $log->success = 1;
             $log->error_message = null;
-            $log->direction     = 'inbound';
-            $log->timecreated   = time();
+            $log->direction = 'inbound';
+            $log->timecreated = time();
             $DB->insert_record('local_integrationhub_log', $log);
 
             // 2. Fire Moodle event so other plugins can react.
             $event = \local_integrationhub\event\webhook_received::create([
-                'context'  => \context_system::instance(),
-                'other'    => [
-                    'serviceid'   => (int)$service->id,
+                'context' => \context_system::instance(),
+                'other' => [
+                    'serviceid' => (int)$service->id,
                     'servicename' => $service->name,
-                    'source'      => $source,
-                    'payload'     => $payload,
+                    'source' => $source,
+                    'payload' => $payload,
                 ],
             ]);
             $event->trigger();
 
             return ['success' => true, 'error' => null];
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             // Log the error.
             $log = new \stdClass();
-            $log->serviceid     = $service->id;
-            $log->endpoint      = $source;
-            $log->http_method   = 'INBOUND';
-            $log->http_status   = null;
-            $log->latency_ms    = (int)((microtime(true) - $starttime) * 1000);
+            $log->serviceid = $service->id;
+            $log->endpoint = $source;
+            $log->http_method = 'INBOUND';
+            $log->http_status = null;
+            $log->latency_ms = (int)((microtime(true) - $starttime) * 1000);
             $log->attempt_count = 1;
-            $log->success       = 0;
+            $log->success = 0;
             $log->error_message = $e->getMessage();
-            $log->direction     = 'inbound';
-            $log->timecreated   = time();
+            $log->direction = 'inbound';
+            $log->timecreated = time();
 
             try {
                 $DB->insert_record('local_integrationhub_log', $log);
-            } catch (\Exception $logerror) {
+            }
+            catch (\Exception $logerror) {
                 debugging('MIH: Failed to log inbound error: ' . $logerror->getMessage(), DEBUG_DEVELOPER);
             }
 

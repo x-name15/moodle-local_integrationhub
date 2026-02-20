@@ -112,8 +112,7 @@ class queue_manager
                 $rule = $DB->get_record('local_integrationhub_rules', ['id' => $ruleid]);
                 if (!$rule) {
                     $purge = true;
-                }
-                else if (!$DB->record_exists('local_integrationhub_svc', ['id' => $rule->serviceid])) {
+                } else if (!$DB->record_exists('local_integrationhub_svc', ['id' => $rule->serviceid])) {
                     // Rule exists but service is gone.
                     $purge = true;
                 }

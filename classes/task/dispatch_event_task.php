@@ -70,8 +70,7 @@ class dispatch_event_task extends \core\task\adhoc_task
                     if (is_string($value)) {
                         // Escape for JSON string context (removes surrounding quotes from json_encode).
                         $replacement = substr(json_encode($value), 1, -1);
-                    }
-                    else if (is_bool($value)) {
+                    } else if (is_bool($value)) {
                         $replacement = $value ? 'true' : 'false';
                     }
                     $json = str_replace('{{' . $key . '}}', $replacement, $json);
@@ -88,8 +87,7 @@ class dispatch_event_task extends \core\task\adhoc_task
         // Determine request method.
         if (isset($service->type) && $service->type === 'amqp') {
             $method = 'AMQP';
-        }
-        else if (!empty($rule->http_method)) {
+        } else if (!empty($rule->http_method)) {
             $method = $rule->http_method;
         } else {
             $method = 'POST';

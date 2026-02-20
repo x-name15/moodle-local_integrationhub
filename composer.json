@@ -1,5 +1,10 @@
 {
     "require": {
         "php-amqplib/php-amqplib": "^3.7"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }

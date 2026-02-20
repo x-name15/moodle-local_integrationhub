@@ -48,8 +48,7 @@ class http implements contract
         if (!empty($service->auth_token)) {
             if ($service->auth_type === 'bearer') {
                 $headers[] = 'Authorization: Bearer ' . $service->auth_token;
-            }
-            else if ($service->auth_type === 'apikey') {
+            } else if ($service->auth_type === 'apikey') {
                 $headers[] = 'X-API-Key: ' . $service->auth_token;
             }
         }
