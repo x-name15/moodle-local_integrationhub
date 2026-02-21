@@ -60,7 +60,8 @@ class mih_response
         ?string $error,
         int $latencyms,
         int $attempts
-    ) {
+        )
+    {
         $this->success = $success;
         $this->httpstatus = $httpstatus;
         $this->body = $body;
@@ -75,8 +76,10 @@ class mih_response
      * @param bool $assoc If true, return associative array. Default true.
      * @return mixed Decoded JSON data.
      * @throws \coding_exception If body is not valid JSON.
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
-    public function json(bool $assoc = true) {
+    public function json(bool $assoc = true)
+    {
         if ($this->body === null) {
             return null;
         }
@@ -92,7 +95,8 @@ class mih_response
      *
      * @return bool
      */
-    public function is_ok(): bool {
+    public function is_ok(): bool
+    {
         return $this->success;
     }
 }

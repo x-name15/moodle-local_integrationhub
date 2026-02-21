@@ -139,8 +139,8 @@ class registry
                 }
             }
             catch (\Exception $e) {
-                // Ignore exceptions when checking classes.
-                $ignored = $e;
+            // Ignore exceptions when checking classes.
+
             }
         }
         $parts = explode('\\', $classname);
