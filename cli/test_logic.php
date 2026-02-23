@@ -48,23 +48,25 @@ try {
         'retry_backoff' => 1,
         'cb_failure_threshold' => 5,
         'cb_cooldown' => 30,
-        'enabled' => 1
+        'enabled' => 1,
     ];
     $svcid = svc_registry::create_service($svc_data);
     mtrace("   [OK] Service Created (ID: $svcid)");
 
     // Read
     $svc = svc_registry::get_service_by_id($svcid);
-    if ($svc->name !== $svc_data->name)
+    if ($svc->name !== $svc_data->name) {
         throw new Exception("Read service name mismatch");
+    }
     mtrace("   [OK] Service Read");
 
     // Update (This is the function that was accidentally modified earlier)
     $update_data = (object)['name' => $svc_data->name . ' Updated'];
     svc_registry::update_service($svcid, $update_data);
     $svc_updated = svc_registry::get_service_by_id($svcid);
-    if ($svc_updated->name !== $update_data->name)
+    if ($svc_updated->name !== $update_data->name) {
         throw new Exception("Update service failed");
+    }
     mtrace("   [OK] Service Updated");
 
     // ------------------------------------------------------------------------
@@ -77,14 +79,15 @@ try {
         'endpoint' => '/anything',
         'http_method' => 'POST',
         'payload_template' => '{"event": "{{eventname}}", "user": "{{objectid}}"}',
-        'enabled' => 1
+        'enabled' => 1,
     ];
     $ruleid = rule_registry::create_rule($rule_data);
     mtrace("   [OK] Rule Created (ID: $ruleid)");
 
     $rule = rule_registry::get_rule($ruleid);
-    if (empty($rule))
+    if (empty($rule)) {
         throw new Exception("Failed to fetch rule by ID");
+    }
     mtrace("   [OK] Rule Read by ID");
 
     // ------------------------------------------------------------------------
@@ -101,12 +104,10 @@ try {
         $json = $response->json();
         if (!isset($json['json']['test'])) {
             mtrace("   [WARN] JSON payload not echoed properly by httpbin");
-        }
-        else {
+        } else {
             mtrace("   [OK] JSON Payload parsed correctly");
         }
-    }
-    else {
+    } else {
         throw new Exception("HTTP Transport failed: " . $response->error);
     }
 
@@ -118,9 +119,7 @@ try {
     mtrace("   [OK] Cleanup successful");
 
     mtrace("\n\033[32mALL TESTS PASSED SUCCESSFULLY!\033[0m\n");
-
-}
-catch (\Exception $e) {
+} catch (\Exception $e) {
     mtrace("\n\033[31m[ERROR] Testing failed: " . $e->getMessage() . "\033[0m");
     mtrace("Stack trace:\n" . $e->getTraceAsString() . "\n");
 }
