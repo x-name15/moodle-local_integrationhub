@@ -26,7 +26,7 @@ define('CLI_SCRIPT', true);
 require(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
 
-// Define expected options and their defaults
+// Define expected options and their defaults.
 [$options, $unrecognized] = cli_get_params(
     ['name' => '', 'help' => false],
     ['h' => 'help']
@@ -51,7 +51,7 @@ echo "Type: {$service->type}\n";
 echo "Base URL: {$service->base_url}\n";
 echo "Auth Type: {$service->auth_type}\n";
 
-// Parse URL
+// Parse URL.
 $parsed = parse_url($service->base_url);
 echo "\n--- Parsed URL ---\n";
 echo json_encode($parsed, JSON_PRETTY_PRINT);

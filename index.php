@@ -59,29 +59,16 @@ if ($canmanage && $action === 'save' && confirm_sesskey()) {
     $data->cb_cooldown         = optional_param('cb_cooldown', 30, PARAM_INT);
     $data->response_queue      = optional_param('response_queue', '', PARAM_ALPHANUMEXT);
 
-    // SERVER-SIDE URL RECONSTRUCTION FOR AMQP
-    // This ensures that even if JS fails to update the hidden base_url field,
-    // we construct the correct URL from the individual fields.
+    // Server-side URL reconstruction for AMQP.
+    // This ensures that even if JS fails to update the hidden base_url field.
+    // We construct the correct URL from the individual fields.
     if ($data->type === 'amqp') {
         $amqphost = optional_param('amqp_host', 'localhost', PARAM_HOST);
         $amqpport = optional_param('amqp_port', 5672, PARAM_INT);
         $amqpuser = optional_param('amqp_user', 'guest', PARAM_TEXT);
         $amqppass = optional_param('amqp_pass', 'guest', PARAM_RAW);
-        $amqpvhost = optional_param('amqp_vhost', '/', PARAM_RAW); // Allow slash
-
-        $amqpexchange = optional_param('ih-amqp_exchange', '', PARAM_TEXT); // Note ID prefix in form
-        // Wait, the input IDs in form are 'ih-amqp_exchange' but names act as keys?
-        // Let's check the form generation code below.
-        // The helper loop uses $af[0] as ID. But names?
-        // line 403: 'id' => "ih-{$af[0]}"
-        // It does NOT specify 'name' explicitly in the array unpack loop above?
-        // Ah, look at line 469: 'name' => $fname. BUT that's for normal fields.
-        // The AMQP loop (line 398) uses:
-        // echo html_writer::empty_tag('input', ['type' => $af[2], 'id' => "ih-{$af[0]}", ...]);
-        // IT DOES NOT HAVE A NAME ATTRIBUTE!!!!
-        // This explains EVERYTHING. The PHP script CANNOT receive these values because they have no name attribute!
-        // The JS was the *only* thing making it work by updating the hidden base_url.
-        // FIX: I must add 'name' attributes to the AMQP builder inputs in the form generation code first.
+        $amqpvhost = optional_param('amqp_vhost', '/', PARAM_RAW); // Allow slash.
+        $amqpexchange = optional_param('ih-amqp_exchange', '', PARAM_TEXT); // Note ID prefix in form.
     }
 
     if ($serviceid > 0) {
@@ -166,7 +153,7 @@ if ($canmanage && $action === 'edit' && $serviceid > 0) {
     $editservice = service_registry::get_service_by_id($serviceid);
 }
 
-// ---- CHARTS DATA PREPARATION ----
+// Charts data preparation.
 // 1. Status Distribution (Global).
 $statusstats = $DB->get_records_sql(
     "SELECT success, COUNT(*) as count
@@ -205,28 +192,44 @@ $chartdatajs = [
     'latency' => $chartdata,
 ];
 
-// ---- OUTPUT ----
+// Output.
 echo $OUTPUT->header();
 
 // Tabs navigation.
 echo html_writer::start_div('mb-4');
 echo html_writer::start_tag('ul', ['class' => 'nav nav-tabs']);
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/index.php'), get_string('services', 'local_integrationhub'), ['class' => 'nav-link active']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/index.php'),
+    get_string('services', 'local_integrationhub'),
+    ['class' => 'nav-link active']
+);
 echo html_writer::end_tag('li');
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/rules.php'), get_string('rules', 'local_integrationhub'), ['class' => 'nav-link']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/rules.php'),
+    get_string('rules', 'local_integrationhub'),
+    ['class' => 'nav-link']
+);
 echo html_writer::end_tag('li');
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/queue.php'), get_string('queue', 'local_integrationhub'), ['class' => 'nav-link']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/queue.php'),
+    get_string('queue', 'local_integrationhub'),
+    ['class' => 'nav-link']
+);
 echo html_writer::end_tag('li');
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/events.php'), get_string('sent_events', 'local_integrationhub'), ['class' => 'nav-link']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/events.php'),
+    get_string('sent_events', 'local_integrationhub'),
+    ['class' => 'nav-link']
+);
 echo html_writer::end_tag('li');
 echo html_writer::end_tag('ul');
 echo html_writer::end_div();
 
-// Charts Section.
+// Charts section.
 echo html_writer::start_div('row mb-4');
 
 // Chart 1: Status.
@@ -245,10 +248,10 @@ echo html_writer::start_div('card');
 echo html_writer::tag('div', get_string('latencytrend', 'local_integrationhub'), ['class' => 'card-header fw-bold']);
 echo html_writer::start_div('card-body', ['style' => 'height: 300px; position: relative;']);
 echo '<canvas id="ih-chart-latency"></canvas>';
-echo html_writer::end_div(); // Close card-body
-echo html_writer::end_div(); // Close card
-echo html_writer::end_div(); // Close col-md-8
-echo html_writer::end_div(); // Close Row (Charts Section)
+echo html_writer::end_div(); // Close card-body.
+echo html_writer::end_div(); // Close card.
+echo html_writer::end_div(); // Close col-md-8.
+echo html_writer::end_div(); // Close row (Charts Section).
 
 // Include Chart.js (Local) with UMD/AMD Hack.
 echo '<script>
@@ -284,8 +287,8 @@ echo html_writer::link(
     '<i class="fa fa-list-alt"></i> ' . get_string('viewlogs', 'local_integrationhub'),
     ['class' => 'btn btn-outline-secondary']
 );
-echo html_writer::end_div(); // col-12
-echo html_writer::end_div(); // row
+echo html_writer::end_div(); // Close col-12.
+echo html_writer::end_div(); // Close row.
 
 // Force a visual break between buttons and the form/table.
 // Removed aggressive spacer.
@@ -309,8 +312,12 @@ echo html_writer::start_tag('form', [
 ]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'save']);
-echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'serviceid',
-    'value' => $editservice ? $editservice->id : 0, 'id' => 'ih-serviceid']);
+echo html_writer::empty_tag('input', [
+    'type' => 'hidden',
+    'name' => 'serviceid',
+    'value' => $editservice ? $editservice->id : 0,
+    'id' => 'ih-serviceid',
+]);
 
 // Form fields.
 $fields = [
@@ -354,8 +361,10 @@ echo html_writer::start_tag('select', [
 ]);
 $selectedbearer = (($editservice->auth_type ?? 'bearer') === 'bearer') ? 'selected' : '';
 $selectedapikey = (($editservice->auth_type ?? '') === 'apikey') ? 'selected' : '';
-echo "<option value='bearer' {$selectedbearer}>" . get_string('authtype_bearer', 'local_integrationhub') . "</option>";
-echo "<option value='apikey' {$selectedapikey}>" . get_string('authtype_apikey', 'local_integrationhub') . "</option>";
+echo "<option value='bearer' {$selectedbearer}>" .
+     get_string('authtype_bearer', 'local_integrationhub') . "</option>";
+echo "<option value='apikey' {$selectedapikey}>" .
+     get_string('authtype_apikey', 'local_integrationhub') . "</option>";
 echo html_writer::end_tag('select');
 echo '</div>';
 
@@ -387,10 +396,11 @@ document.addEventListener("DOMContentLoaded", function() {
 // AMQP Connection Builder (Conditional Visibility via JS).
 echo '<div id="ih-amqp-builder" class="col-12 d-none mb-3">';
 echo '<div class="card bg-light border-info"><div class="card-body">';
-echo '<h6 class="card-title text-info"><i class="fa fa-magic"></i> ' . get_string('amqp_builder', 'local_integrationhub') . '</h6>';
+echo '<h6 class="card-title text-info"><i class="fa fa-magic"></i> ' .
+     get_string('amqp_builder', 'local_integrationhub') . '</h6>';
 echo '<div class="row">';
 
-// Parse existing URL if editing AMQP
+// Parse existing URL if editing AMQP.
 $amqpparts = [
     'host' => 'localhost', 'port' => 5672, 'user' => 'guest', 'pass' => 'guest', 'vhost' => '/',
     'exchange' => '', 'routing_key' => '', 'queue_declare' => '', 'dlq' => '',
@@ -403,7 +413,7 @@ if (!empty($editservice) && ($editservice->type === 'amqp')) {
     $amqpparts['user'] = $parsed['user'] ?? 'guest';
     $amqpparts['pass'] = $parsed['pass'] ?? 'guest';
 
-    // Decoded vhost for display
+    // Decoded vhost for display.
     $path = isset($parsed['path']) ? $parsed['path'] : '/';
     if ($path !== '/' && strpos($path, '/') === 0) {
         $path = substr($path, 1);
@@ -422,22 +432,26 @@ if (!empty($editservice) && ($editservice->type === 'amqp')) {
     }
 }
 
-// Core Connection
+// Core Connection.
 $amqpfields = [
     ['amqp_host', 'amqp_host', 'text', $amqpparts['host'], 'localhost', 'col-md-3'],
     ['amqp_port', 'amqp_port', 'number', $amqpparts['port'], '5672', 'col-md-2'],
     ['amqp_user', 'amqp_user', 'text', $amqpparts['user'], 'guest', 'col-md-2'],
-    ['amqp_pass', 'amqp_pass', 'password', $amqpparts['pass'], '', 'col-md-2'], // Password might be masked in future
+    // Password might be masked in future.
+    ['amqp_pass', 'amqp_pass', 'password', $amqpparts['pass'], '', 'col-md-2'],
     ['amqp_vhost', 'amqp_vhost', 'text', $amqpparts['vhost'], '/', 'col-md-3'],
 ];
 foreach ($amqpfields as $af) {
-    // array unpack: id, langstr, type, val, placeholder, colclass
+    // Array unpack: id, langstr, type, val, placeholder, colclass.
     $col = $af[5] ?? 'col-md-2';
     echo '<div class="' . $col . ' mb-2">';
-    echo html_writer::tag('label', get_string($af[1], 'local_integrationhub'), ['class' => 'small', 'style' => 'display:block; margin-bottom:2px;']);
+    echo html_writer::tag('label', get_string($af[1], 'local_integrationhub'), [
+        'class' => 'small', 'style' => 'display:block; margin-bottom:2px;',
+    ]);
+    // Add name attribute so PHP receives it.
     echo html_writer::empty_tag('input', [
         'type' => $af[2],
-        'name' => $af[0], // Add NAME attribute so PHP receives it!
+        'name' => $af[0],
         'id' => "ih-{$af[0]}",
         'value' => $af[3],
         'class' => 'form-control form-control-sm ih-amqp-sync',
@@ -446,17 +460,17 @@ foreach ($amqpfields as $af) {
     echo '</div>';
 }
 
-echo '</div>'; // .row (Connection)
+echo '</div>'; // Row (Connection).
 
-    // Advanced: Queue & DLQ
+    // Advanced: Queue & DLQ.
     echo '<div class="row mt-2 border-top pt-2">';
 
-    // Exchange
+    // Exchange.
     echo '<div class="col-md-3">';
     echo html_writer::tag('label', get_string('amqp_exchange', 'local_integrationhub'), ['class' => 'small fw-bold']);
     echo html_writer::empty_tag('input', [
         'type' => 'text',
-        'name' => 'ih-amqp_exchange', // Manual name
+        'name' => 'ih-amqp_exchange', // Manual name.
         'id' => 'ih-amqp_exchange',
         'class' => 'form-control form-control-sm ih-amqp-sync',
         'placeholder' => '(Default)',
@@ -464,7 +478,7 @@ echo '</div>'; // .row (Connection)
     ]);
     echo '</div>';
 
-    // Routing Key
+    // Routing Key.
     echo '<div class="col-md-3">';
     echo html_writer::tag('label', get_string('amqp_routing_key_default', 'local_integrationhub'), ['class' => 'small fw-bold']);
     echo html_writer::tag('i', '', [
@@ -474,7 +488,7 @@ echo '</div>'; // .row (Connection)
     ]);
     echo html_writer::empty_tag('input', [
         'type' => 'text',
-        'name' => 'ih-amqp_routing_key', // Manual name
+        'name' => 'ih-amqp_routing_key', // Manual name.
         'id' => 'ih-amqp_routing_key',
         'class' => 'form-control form-control-sm ih-amqp-sync',
         'placeholder' => 'my.routing.key',
@@ -482,7 +496,7 @@ echo '</div>'; // .row (Connection)
     ]);
     echo '</div>';
 
-    // Queue Declare
+    // Queue Declare.
     echo '<div class="col-md-3">';
     echo html_writer::tag('label', get_string('amqp_queue_declare', 'local_integrationhub'), ['class' => 'small fw-bold']);
     echo html_writer::tag('i', '', [
@@ -492,7 +506,7 @@ echo '</div>'; // .row (Connection)
     ]);
     echo html_writer::empty_tag('input', [
         'type' => 'text',
-        'name' => 'ih-amqp_queue_declare', // Manual name
+        'name' => 'ih-amqp_queue_declare', // Manual name.
         'id' => 'ih-amqp_queue_declare',
         'class' => 'form-control form-control-sm ih-amqp-sync',
         'placeholder' => 'my_queue',
@@ -501,12 +515,12 @@ echo '</div>'; // .row (Connection)
     echo '</div>';
 
 
-    // DLQ
+    // DLQ.
     echo '<div class="col-md-3">';
     echo html_writer::tag('label', get_string('amqp_dlq', 'local_integrationhub'), ['class' => 'small fw-bold']);
     echo html_writer::empty_tag('input', [
         'type' => 'text',
-        'name' => 'ih-amqp_dlq', // Manual name
+        'name' => 'ih-amqp_dlq', // Manual name.
         'id' => 'ih-amqp_dlq',
         'class' => 'form-control form-control-sm ih-amqp-sync',
         'placeholder' => 'my_dlq',
@@ -514,7 +528,7 @@ echo '</div>'; // .row (Connection)
     ]);
     echo '</div>';
 
-    echo '</div>'; // .row (Queues)
+    echo '</div>'; // Row (Queues).
 
     echo '</div></div>';
     echo '</div>';
@@ -523,9 +537,9 @@ echo '</div>'; // .row (Connection)
         [$fname, $stringkey, $type, $value, $required] = $field;
         $divclass = 'col-md-6 mb-3';
 
-        // Hide base_url container if AMQP (handled by JS via ID)
+        // Hide base_url container if AMQP (handled by JS via ID).
         if ($fname === 'base_url') {
-            $divclass .= ' ih-base-url-container'; // Marker class
+            $divclass .= ' ih-base-url-container'; // Marker class.
         }
 
         echo '<div class="' . $divclass . '">';
@@ -552,44 +566,57 @@ echo '</div>'; // .row (Connection)
             ]);
         }
         if ($fname === 'response_queue') {
-            echo html_writer::tag('div', get_string('response_queue_help', 'local_integrationhub'), ['class' => 'form-text text-muted']);
+            echo html_writer::tag('div', get_string('response_queue_help', 'local_integrationhub'), [
+                'class' => 'form-text text-muted',
+            ]);
         }
         echo '</div>';
     }
 
-    echo '</div>'; // .row
+    echo '</div>'; // Row.
 
     // Form buttons.
     echo html_writer::start_div('d-flex');
+    // Added me-2 for spacing.
     echo html_writer::tag('button', get_string('saveservice', 'local_integrationhub'), [
-    'type' => 'submit', 'class' => 'btn btn-success me-2', // Added me-2 for spacing,
+        'type' => 'submit', 'class' => 'btn btn-success me-2',
     ]);
     echo html_writer::tag('button', get_string('cancel', 'local_integrationhub'), [
-    'type' => 'button', 'class' => 'btn btn-secondary', 'id' => 'ih-btn-cancel',
+        'type' => 'button', 'class' => 'btn btn-secondary', 'id' => 'ih-btn-cancel',
     ]);
     echo html_writer::end_div();
 
     echo html_writer::end_tag('form');
-    echo html_writer::end_div(); // .card-body
-    echo html_writer::end_div(); // .card #ih-service-form
+    echo html_writer::end_div(); // Card-body.
+    echo html_writer::end_div(); // Card #ih-service-form.
 
     // Another spacer if form is hidden/shown, just to be safe.
-    // spacer removed.
+    // Spacer removed.
 
     // Services table.
-    echo html_writer::tag('h4', get_string('services', 'local_integrationhub'), ['class' => 'mb-3', 'style' => 'clear: both;']);
+    echo html_writer::tag('h4', get_string('services', 'local_integrationhub'), [
+        'class' => 'mb-3', 'style' => 'clear: both;',
+    ]);
 
     if (empty($services)) {
         echo html_writer::div(get_string('noservices', 'local_integrationhub'), 'alert alert-info');
     } else {
         echo html_writer::start_tag('div', ['class' => 'table-responsive']);
-        // Force text-dark to avoid theme white-text issues
-        echo html_writer::start_tag('table', ['class' => 'table table-striped table-hover', 'id' => 'ih-services-table', 'style' => 'color: #212529 !important;']);
+
+        // Force text-dark to avoid theme white-text issues.
+        echo html_writer::start_tag('table', [
+            'class' => 'table table-striped table-hover',
+            'id' => 'ih-services-table',
+            'style' => 'color: #212529 !important;',
+        ]);
 
         // Header.
         echo '<thead class="table-dark"><tr>';
-        $headers = ['col_name', 'col_type', 'col_baseurl', 'col_authtype', 'col_circuit', 'col_latency',
-                'col_errors', 'col_enabled'];
+        $headers = [
+            'col_name', 'col_type', 'col_baseurl', 'col_authtype',
+            'col_circuit', 'col_latency', 'col_errors', 'col_enabled',
+        ];
+
         if ($canmanage) {
             $headers[] = 'col_actions';
         }
@@ -669,10 +696,12 @@ echo '</div>'; // .row (Connection)
                 echo html_writer::link(
                     $deleteurl,
                     '<i class="fa fa-trash"></i> ',
-                    ['class' => 'btn btn-sm btn-outline-danger me-1',
-                     'title' => get_string('deleteservice', 'local_integrationhub'),
-                     'onclick' => "return confirm('" .
-                    addslashes_js(get_string('deleteconfirm', 'local_integrationhub', $svc->name)) . "');"]
+                    [
+                        'class' => 'btn btn-sm btn-outline-danger me-1',
+                        'title' => get_string('deleteservice', 'local_integrationhub'),
+                        'onclick' => "return confirm('" .
+                        addslashes_js(get_string('deleteconfirm', 'local_integrationhub', $svc->name)) . "');",
+                    ]
                 );
 
                 // Reset circuit (only if not closed).
@@ -683,11 +712,10 @@ echo '</div>'; // .row (Connection)
                     echo html_writer::link(
                         $reseturl,
                         '<i class="fa fa-refresh"></i> ',
-                        ['class' => 'btn btn-sm btn-outline-warning',
-                         'title' => get_string(
-                             'resetcircuit',
-                             'local_integrationhub'
-                         )]
+                        [
+                            'class' => 'btn btn-sm btn-outline-warning',
+                            'title' => get_string('resetcircuit', 'local_integrationhub'),
+                        ]
                     );
                 }
 

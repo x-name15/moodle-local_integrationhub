@@ -32,13 +32,11 @@ use local_integrationhub\mih;
 mtrace('Integration Hub - Manual Logic Verification');
 
 try {
-    // ------------------------------------------------------------------------
-    // TEST 1: Service Registry (Create, Read, Update, Delete)
-    // ------------------------------------------------------------------------
+    // TEST 1: Service Registry (Create, Read, Update, Delete).
     mtrace("1. Testing Service Registry...");
 
-    // Create
-    $svc_data = (object)[
+    // Create.
+    $svcdata = (object)[
         'name' => 'CLI Test Service ' . time(),
         'type' => 'rest',
         'base_url' => 'https://httpbin.org',
@@ -50,30 +48,27 @@ try {
         'cb_cooldown' => 30,
         'enabled' => 1,
     ];
-    $svcid = svc_registry::create_service($svc_data);
+    $svcid = svc_registry::create_service($svcdata);
     mtrace("   [OK] Service Created (ID: $svcid)");
 
-    // Read
+    // Read.
     $svc = svc_registry::get_service_by_id($svcid);
-    if ($svc->name !== $svc_data->name) {
+    if ($svc->name !== $svcdata->name) {
         throw new Exception("Read service name mismatch");
     }
     mtrace("   [OK] Service Read");
 
-    // Update (This is the function that was accidentally modified earlier)
-    $update_data = (object)['name' => $svc_data->name . ' Updated'];
-    svc_registry::update_service($svcid, $update_data);
-    $svc_updated = svc_registry::get_service_by_id($svcid);
-    if ($svc_updated->name !== $update_data->name) {
+    // Update (This is the function that was accidentally modified earlier).
+    $updatedata = (object)['name' => $svcdata->name . ' Updated'];
+    svc_registry::update_service($svcid, $updatedata);
+    $svcupdated = svc_registry::get_service_by_id($svcid);
+    if ($svcupdated->name !== $updatedata->name) {
         throw new Exception("Update service failed");
     }
     mtrace("   [OK] Service Updated");
-
-    // ------------------------------------------------------------------------
-    // TEST 2: Rule Registry
-    // ------------------------------------------------------------------------
+    // TEST 2: Rule Registry.
     mtrace("\n2. Testing Rule Registry...");
-    $rule_data = (object)[
+    $ruledata = (object)[
         'eventname' => '\core\event\user_created',
         'serviceid' => $svcid,
         'endpoint' => '/anything',
@@ -81,7 +76,7 @@ try {
         'payload_template' => '{"event": "{{eventname}}", "user": "{{objectid}}"}',
         'enabled' => 1,
     ];
-    $ruleid = rule_registry::create_rule($rule_data);
+    $ruleid = rule_registry::create_rule($ruledata);
     mtrace("   [OK] Rule Created (ID: $ruleid)");
 
     $rule = rule_registry::get_rule($ruleid);
@@ -89,13 +84,10 @@ try {
         throw new Exception("Failed to fetch rule by ID");
     }
     mtrace("   [OK] Rule Read by ID");
-
-    // ------------------------------------------------------------------------
-    // TEST 3: HTTP Transport & Response/Request objects
-    // ------------------------------------------------------------------------
+    // TEST 3: HTTP Transport & Response/Request objects.
     mtrace("\n3. Testing MIH Facade & HTTP Transport...");
-    $response = mih::send($svc_updated->name)
-        ->to('/post') // httpbin.org/post
+    $response = mih::send($svcupdated->name)
+        ->to('/post') // Httpbin.org/post.
         ->with(['test' => 'data', 'cli' => true])
         ->dispatch();
 
@@ -110,10 +102,7 @@ try {
     } else {
         throw new Exception("HTTP Transport failed: " . $response->error);
     }
-
-    // ------------------------------------------------------------------------
-    // TEST 4: Cleanup
-    // ------------------------------------------------------------------------
+    // TEST 4: Cleanup.
     mtrace("\n4. Cleaning up test data...");
     rule_registry::delete_rule($ruleid);
     mtrace("   [OK] Cleanup successful");

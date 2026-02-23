@@ -98,16 +98,32 @@ echo $OUTPUT->header();
 echo html_writer::start_div('mb-4');
 echo html_writer::start_tag('ul', ['class' => 'nav nav-tabs']);
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/index.php'), get_string('services', 'local_integrationhub'), ['class' => 'nav-link']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/index.php'),
+    get_string('services', 'local_integrationhub'),
+    ['class' => 'nav-link']
+);
 echo html_writer::end_tag('li');
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/rules.php'), get_string('rules', 'local_integrationhub'), ['class' => 'nav-link active']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/rules.php'),
+    get_string('rules', 'local_integrationhub'),
+    ['class' => 'nav-link active']
+);
 echo html_writer::end_tag('li');
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/queue.php'), get_string('queue', 'local_integrationhub'), ['class' => 'nav-link']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/queue.php'),
+    get_string('queue', 'local_integrationhub'),
+    ['class' => 'nav-link']
+);
 echo html_writer::end_tag('li');
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/events.php'), get_string('sent_events', 'local_integrationhub'), ['class' => 'nav-link']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/events.php'),
+    get_string('sent_events', 'local_integrationhub'),
+    ['class' => 'nav-link']
+);
 echo html_writer::end_tag('li');
 echo html_writer::end_tag('ul');
 echo html_writer::end_div();
@@ -129,14 +145,26 @@ $formclass = $showform ? '' : 'd-none';
 
 echo html_writer::start_div("card mb-4 {$formclass}", ['id' => 'ih-rule-form']);
 echo html_writer::start_div('card-header');
-echo html_writer::tag('h5', $editrule ? get_string('editrule', 'local_integrationhub') : get_string('addrule', 'local_integrationhub'));
+echo html_writer::tag(
+    'h5',
+    $editrule ? get_string('editrule', 'local_integrationhub') : get_string('addrule', 'local_integrationhub')
+);
 echo html_writer::end_div();
 echo html_writer::start_div('card-body');
 
-echo html_writer::start_tag('form', ['method' => 'post', 'action' => $PAGE->url->out(false), 'id' => 'ih-form']);
+echo html_writer::start_tag('form', [
+    'method' => 'post',
+    'action' => $PAGE->url->out(false),
+    'id' => 'ih-form',
+]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
 echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'save']);
-echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'ruleid', 'value' => $editrule ? $editrule->id : 0, 'id' => 'ih-ruleid']);
+echo html_writer::empty_tag('input', [
+    'type' => 'hidden',
+    'name' => 'ruleid',
+    'value' => $editrule ? $editrule->id : 0,
+    'id' => 'ih-ruleid',
+]);
 
 echo '<div class="row">';
 
@@ -175,7 +203,12 @@ echo html_writer::tag(
     get_string('rule_service', 'local_integrationhub'),
     ['for' => 'ih-serviceid', 'class' => 'form-label', 'style' => 'display:block; margin-bottom:6px;']
 );
-echo html_writer::start_tag('select', ['name' => 'serviceid', 'id' => 'ih-serviceid', 'class' => 'form-select', 'required' => 'required']);
+echo html_writer::start_tag('select', [
+    'name' => 'serviceid',
+    'id' => 'ih-serviceid',
+    'class' => 'form-select',
+    'required' => 'required',
+]);
 echo '<option value="">' . get_string('selectservice', 'local_integrationhub') . '</option>';
 $currentsvc = $editrule->serviceid ?? 0;
 foreach ($services as $svc) {
@@ -190,7 +223,11 @@ echo '</div>';
 
 // HTTP Method selector.
 echo '<div class="col-md-6 mb-3" id="ih-method-container">';
-echo html_writer::tag('label', get_string('rule_method', 'local_integrationhub'), ['for' => 'ih-method', 'class' => 'form-label', 'style' => 'display:block; margin-bottom:6px;']);
+echo html_writer::tag(
+    'label',
+    get_string('rule_method', 'local_integrationhub'),
+    ['for' => 'ih-method', 'class' => 'form-label', 'style' => 'display:block; margin-bottom:6px;']
+);
 echo html_writer::start_tag('select', ['name' => 'http_method', 'id' => 'ih-method', 'class' => 'form-select']);
 $methods = ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'];
 $currentmethod = $editrule->http_method ?? 'POST';
@@ -226,7 +263,11 @@ echo html_writer::empty_tag('input', [
     'class' => 'form-check-input',
     'id' => 'ih-enabled',
 ]);
-echo html_writer::tag('label', get_string('enabled', 'local_integrationhub'), ['for' => 'ih-enabled', 'class' => 'form-check-label']);
+echo html_writer::tag(
+    'label',
+    get_string('enabled', 'local_integrationhub'),
+    ['for' => 'ih-enabled', 'class' => 'form-check-label']
+);
 echo html_writer::end_div();
 echo '</div>';
 
@@ -242,7 +283,11 @@ echo html_writer::tag('textarea', $editrule->payload_template ?? '{"event": "{{e
     'style' => 'font-family: monospace;',
 ]);
 echo html_writer::start_div('mt-2 d-flex justify-content-between align-items-center');
-echo html_writer::tag('div', get_string('rule_template_help', 'local_integrationhub'), ['class' => 'form-text text-muted']);
+echo html_writer::tag(
+    'div',
+    get_string('rule_template_help', 'local_integrationhub'),
+    ['class' => 'form-text text-muted']
+);
 echo html_writer::tag('button', 'Preview Payload', [
     'class' => 'btn btn-sm btn-outline-info',
     'id' => 'ih-btn-preview',
@@ -251,17 +296,21 @@ echo html_writer::tag('button', 'Preview Payload', [
 echo html_writer::end_div();
 echo '</div>';
 
-echo '</div>'; // .row
+echo '</div>'; // Row.
 
 // Buttons.
 echo html_writer::start_div('d-flex', ['style' => 'gap: 12px;']);
 echo html_writer::tag('button', get_string('save', 'core'), ['type' => 'submit', 'class' => 'btn btn-success']);
-echo html_writer::tag('button', get_string('cancel', 'core'), ['type' => 'button', 'class' => 'btn btn-secondary', 'id' => 'ih-btn-cancel']);
+echo html_writer::tag(
+    'button',
+    get_string('cancel', 'core'),
+    ['type' => 'button', 'class' => 'btn btn-secondary', 'id' => 'ih-btn-cancel']
+);
 echo html_writer::end_div();
 
 echo html_writer::end_tag('form');
-echo html_writer::end_div(); // .card-body
-echo html_writer::end_div(); // .card
+echo html_writer::end_div(); // Card-body.
+echo html_writer::end_div(); // Card.
 
 // CSS Fix for Moodle Themes (Force dark text on hover).
 echo html_writer::tag('style', "
@@ -276,8 +325,11 @@ if (empty($rules)) {
     echo html_writer::div(get_string('norules', 'local_integrationhub'), 'alert alert-info');
 } else {
     echo html_writer::start_tag('div', ['class' => 'table-responsive']);
-    // Force text-dark to avoid theme white-text issues
-    echo html_writer::start_tag('table', ['class' => 'table table-striped table-hover', 'style' => 'color: #212529 !important;']);
+    // Force text-dark to avoid theme white-text issues.
+    echo html_writer::start_tag('table', [
+        'class' => 'table table-striped table-hover',
+        'style' => 'color: #212529 !important;',
+    ]);
     echo '<thead class="table-dark"><tr>';
     echo '<th>' . get_string('col_event', 'local_integrationhub') . '</th>';
     echo '<th>' . get_string('col_service', 'local_integrationhub') . '</th>';
@@ -319,21 +371,36 @@ if (empty($rules)) {
             echo '<td><span class="badge ' . $badgeclass . '">' . s($method) . '</span></td>';
         }
 
-        echo '<td>' . ($rule->endpoint ? html_writer::tag('code', s($rule->endpoint)) : '<span class="text-muted">Default</span>') . '</td>';
+        echo '<td>' . ($rule->endpoint ?
+            html_writer::tag('code', s($rule->endpoint)) :
+            '<span class="text-muted">Default</span>') . '</td>';
 
         $statusclass = $rule->enabled ? 'badge bg-success' : 'badge bg-secondary';
-        $statuslabel = $rule->enabled ? get_string('status_active', 'local_integrationhub') : get_string('status_disabled', 'local_integrationhub');
+        $statuslabel = $rule->enabled ?
+            get_string('status_active', 'local_integrationhub') :
+            get_string('status_disabled', 'local_integrationhub');
+
         echo '<td><span class="' . $statusclass . '">' . $statuslabel . '</span></td>';
 
         if ($canmanage) {
             echo '<td>';
             $editurl = new moodle_url($PAGE->url, ['action' => 'edit', 'ruleid' => $rule->id]);
-            echo html_writer::link($editurl, '<i class="fa fa-pencil"></i>', ['class' => 'btn btn-sm btn-outline-primary me-1']);
+            echo html_writer::link(
+                $editurl,
+                '<i class="fa fa-pencil"></i>',
+                ['class' => 'btn btn-sm btn-outline-primary me-1']
+            );
 
-            $deleteurl = new moodle_url($PAGE->url, ['action' => 'delete', 'ruleid' => $rule->id, 'confirm' => 1, 'sesskey' => sesskey()]);
+            $deleteurl = new moodle_url($PAGE->url, [
+                'action' => 'delete',
+                'ruleid' => $rule->id,
+                'confirm' => 1,
+                'sesskey' => sesskey(),
+            ]);
             echo html_writer::link($deleteurl, '<i class="fa fa-trash"></i>', [
                 'class' => 'btn btn-sm btn-outline-danger',
-                'onclick' => "return confirm('" . addslashes_js(get_string('deleteconfirmrule', 'local_integrationhub')) . "');",
+                'onclick' => "return confirm('" .
+                    addslashes_js(get_string('deleteconfirmrule', 'local_integrationhub')) . "');",
             ]);
             echo '</td>';
         }

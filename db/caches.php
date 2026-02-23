@@ -27,8 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 $definitions = [
     'event_dedupe' => [
         'mode' => cache_store::MODE_APPLICATION,
-        'simplekeys' => true, // average key usage
-        'simpledata' => true, // simple boolean/timestamp data
-        'ttl' => 60, // 1 minute deduplication window
+        'simplekeys' => true, // Average key usage.
+        'simpledata' => true, // Simple boolean/timestamp data.
+        'ttl' => 60, // 1 minute deduplication window.
     ],
 ];

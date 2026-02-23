@@ -48,31 +48,46 @@ $sql = "SELECT l.*, s.name AS service_name
 $params = ['direction' => 'outbound'];
 $logs = $DB->get_records_sql($sql, $params, 0, $limit);
 
-// ---- OUTPUT ----
 echo $OUTPUT->header();
 
 // Tabs navigation (Standardized across pages).
 echo html_writer::start_div('mb-4');
 echo html_writer::start_tag('ul', ['class' => 'nav nav-tabs']);
 
-// 1. Services
+// 1. Services.
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/index.php'), get_string('services', 'local_integrationhub'), ['class' => 'nav-link']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/index.php'),
+    get_string('services', 'local_integrationhub'),
+    ['class' => 'nav-link']
+);
 echo html_writer::end_tag('li');
 
-// 2. Rules
+// 2. Rules.
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/rules.php'), get_string('rules', 'local_integrationhub'), ['class' => 'nav-link']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/rules.php'),
+    get_string('rules', 'local_integrationhub'),
+    ['class' => 'nav-link']
+);
 echo html_writer::end_tag('li');
 
-// 3. Queue
+// 3. Queue.
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/queue.php'), get_string('queue', 'local_integrationhub'), ['class' => 'nav-link']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/queue.php'),
+    get_string('queue', 'local_integrationhub'),
+    ['class' => 'nav-link']
+);
 echo html_writer::end_tag('li');
 
-// 4. Sent Events (Active)
+// 4. Sent Events (Active).
 echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(new moodle_url('/local/integrationhub/events.php'), get_string('sent_events', 'local_integrationhub'), ['class' => 'nav-link active']);
+echo html_writer::link(
+    new moodle_url('/local/integrationhub/events.php'),
+    get_string('sent_events', 'local_integrationhub'),
+    ['class' => 'nav-link active']
+);
 echo html_writer::end_tag('li');
 
 echo html_writer::end_tag('ul');
@@ -144,7 +159,7 @@ if (empty($logs)) {
             if (!$text) {
                 $text = 'ERR';
             }
-            // Show error in tooltip?
+            // Show error in tooltip.
             if ($log->error_message) {
                 $text .= ' <i class="fa fa-info-circle" title="' . s($log->error_message) . '"></i>';
             }

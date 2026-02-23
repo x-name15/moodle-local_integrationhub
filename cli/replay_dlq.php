@@ -27,7 +27,7 @@ define('CLI_SCRIPT', true);
 require(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
 
-// Options
+// Options.
 [$options, $unrecognized] = cli_get_params([
     'id' => 0,
     'all' => false,
@@ -48,8 +48,8 @@ Options:
 -h, --help        Print out this help.
 
 Example:
-\$ php local/integrationhub/cli/replay_dlq.php --id=5
-\$ php local/integrationhub/cli/replay_dlq.php --all
+$ php local/integrationhub/cli/replay_dlq.php --id=5
+$ php local/integrationhub/cli/replay_dlq.php --all
 ";
     cli_write($help);
     exit(0);
@@ -87,21 +87,22 @@ foreach ($toreplay as $item) {
     // This is a design limitation. We should probably just send the payload directly via Gateway if we are replaying.
     // But we need the Service ID and Endpoint info.
 
-    $rule = $DB->get_record('local_integrationhub_rules', ['serviceid' => $item->serviceid, 'eventname' => $item->eventname], '*', IGNORE_MULTIPLE);
+    $params = ['serviceid' => $item->serviceid, 'eventname' => $item->eventname];
+    $rule = $DB->get_record('local_integrationhub_rules', $params, '*', IGNORE_MULTIPLE);
     if (!$rule) {
-        echo "  [SKIP] No matching rule found for service {$item->serviceid}.\n";
+        echo "   [SKIP] No matching rule found for service {$item->serviceid}.\n";
         continue;
     }
 
     // We can't easily use the existing task logic because it expects raw event data.
-    // We will cheat and queue a "Replay Task" or just execute directly here since it's CLI.
+    // We will cheat and execute directly here since it's CLI.
     // Let's execute directly via Gateway to confirm it works.
 
     try {
-        // Use MIH Facade
+        // Use MIH Facade.
         $service = \local_integrationhub\service\registry::get_service_by_id($item->serviceid);
         if (!$service) {
-            echo "  [SKIP] Service {$item->serviceid} not found.\n";
+            echo "   [SKIP] Service {$item->serviceid} not found.\n";
             continue;
         }
 
@@ -109,16 +110,17 @@ foreach ($toreplay as $item) {
         $endpoint = !empty($rule->endpoint) ? $rule->endpoint : '/';
         $method = ($service->type === 'amqp') ? 'AMQP' : 'POST';
 
-        $response = \local_integrationhub\mih::instance()->execute_request($service->name, $endpoint, $payload, $method);
+        $mih = \local_integrationhub\mih::instance();
+        $response = $mih->execute_request($service->name, $endpoint, $payload, $method);
 
         if ($response->is_ok()) {
-            echo "  [SUCCESS] Replayed successfully.\n";
+            echo "   [SUCCESS] Replayed successfully.\n";
             $DB->delete_records('local_integrationhub_dlq', ['id' => $item->id]);
         } else {
-            echo "  [FAIL] MIH error: {$response->error}\n";
+            echo "   [FAIL] MIH error: {$response->error}\n";
         }
     } catch (\Exception $e) {
-        echo "  [ERROR] " . $e->getMessage() . "\n";
+        echo "   [ERROR] " . $e->getMessage() . "\n";
     }
 }
 

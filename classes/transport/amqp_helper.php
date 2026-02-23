@@ -99,7 +99,7 @@ class amqp_helper
      * @param string $queue
      */
     public static function ensure_queue($channel, string $queue): void {
-        // durable: true, exclusive: false, auto_delete: false
+        // Set the queue as durable, not exclusive, and without auto-delete.
         $channel->queue_declare($queue, false, true, false, false);
     }
 }

@@ -33,7 +33,7 @@ mtrace("---------------------------------------------------");
 mtrace("Testing MIH Facade...");
 mtrace("---------------------------------------------------");
 
-// Test 1: Static Request
+// Test 1: Static Request.
 try {
     mtrace("1. Testing mih::request('test-service')...");
     \local_integrationhub\mih::request('test-service-static', '/api', ['a' => 1]);
@@ -48,7 +48,7 @@ try {
     mtrace("   [FAIL] Exception: " . $e->getMessage());
 }
 
-// Test 2: Fluent Interface
+// Test 2: Fluent Interface.
 try {
     mtrace("2. Testing mih::send('test-service')...");
     \local_integrationhub\mih::send('test-service-fluent')

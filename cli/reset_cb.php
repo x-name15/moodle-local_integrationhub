@@ -28,9 +28,8 @@ require(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
 
 use local_integrationhub\service\registry;
-use local_integrationhub\service\circuit_breaker;
 
-// Options
+// Options.
 [$options, $unrecognized] = cli_get_params([
     'service' => '',
     'help' => false,
@@ -49,11 +48,11 @@ if ($options['help'] || empty($options['service'])) {
 Resets the Circuit Breaker state for a given service.
 
 Options:
--s, --service     Service name (slug) to reset.
--h, --help        Print out this help.
+-s, --service      Service name (slug) to reset.
+-h, --help         Print out this help.
 
 Example:
-\$ php local/integrationhub/cli/reset_cb.php --service='python_test_service'
+$ php local/integrationhub/cli/reset_cb.php --service='python_test_service'
 ";
     cli_write($help);
     exit(0);
@@ -73,7 +72,7 @@ cli_heading("Resetting Circuit Breaker for '{$service->name}'");
 $DB->delete_records('local_integrationhub_cb', ['serviceid' => $service->id]);
 
 // Re-init.
-$cbrecord = new stdClass();
+$cbrecord = new \stdClass();
 $cbrecord->serviceid = $service->id;
 $cbrecord->state = 'closed';
 $cbrecord->failure_count = 0;

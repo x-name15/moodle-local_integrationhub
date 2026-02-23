@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * DB/System definition.
  *
@@ -28,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
  * Upgrade script for local_integrationhub.
  *
  * @param int $oldversion The version we are upgrading from.
- * @return bool Result
+ * @return bool Result.
  */
 function xmldb_local_integrationhub_upgrade($oldversion) {
     global $DB;
@@ -38,7 +36,16 @@ function xmldb_local_integrationhub_upgrade($oldversion) {
     if ($oldversion < 2026021803) {
         // Define field http_method to be added to local_integrationhub_rules.
         $table = new xmldb_table('local_integrationhub_rules');
-        $field = new xmldb_field('http_method', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, 'POST', 'endpoint');
+        $field = new xmldb_field(
+            'http_method',
+            XMLDB_TYPE_CHAR,
+            '10',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            'POST',
+            'endpoint'
+        );
 
         // Conditionally launch add field http_method.
         if (!$dbman->field_exists($table, $field)) {
