@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <libraries>
     <library>
-        <location>vendor/php-amqplib</location>
+        <location>vendor/php-amqplib/php-amqplib</location>
         <name>php-amqplib</name>
         <version>3.x</version>
         <license>LGPL-2.1</license>
