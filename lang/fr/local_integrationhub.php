@@ -48,6 +48,7 @@ $string['avglatency'] = 'Latence moyenne (ms)';
 $string['base_url_help'] = 'URL de base du service externe.';
 $string['baseurl'] = 'URL de base / Connexion';
 $string['cancel'] = 'Annuler';
+$string['cachedef_event_dedupe'] = 'Cache de déduplication des événements';
 $string['cbcooldown'] = 'Refroidissement du Circuit Breaker (secondes)';
 $string['cbcooldown_help'] = 'Secondes à attendre avant de tester à nouveau le service (état half-open).';
 $string['cbfailurethreshold'] = 'Seuil du Circuit Breaker';

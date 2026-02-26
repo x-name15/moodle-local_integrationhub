@@ -40,7 +40,6 @@ use context_system;
  * External API class for payload template preview.
  */
 class preview_payload extends external_api {
-
     /**
      * Define input parameters.
      *

@@ -25,6 +25,8 @@
 
 require(__DIR__ . '/../../config.php');
 
+require_login();
+
 // Endpoint is deprecated. All AJAX calls should use the External Services API
 // (e.g. core/ajax calling local_integrationhub_preview_payload).
 http_response_code(410);
