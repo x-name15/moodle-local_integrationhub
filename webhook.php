@@ -121,8 +121,8 @@ if (empty($rawbody)) {
 $payload = json_decode($rawbody, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => get_string('webhook_invalid_json',
-        'local_integrationhub', json_last_error_msg())]);
+    $errormsg = get_string('webhook_invalid_json', 'local_integrationhub', json_last_error_msg());
+    echo json_encode(['success' => false, 'error' => $errormsg]);
     exit;
 }
 
