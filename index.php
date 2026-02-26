@@ -49,9 +49,9 @@ if ($canmanage && $action === 'save' && confirm_sesskey()) {
     $data = new stdClass();
     $data->name                = required_param('name', PARAM_TEXT);
     $data->type                = optional_param('type', 'rest', PARAM_ALPHA);
-    $data->base_url            = required_param('base_url', PARAM_RAW_TRIMMED);
+    $data->base_url            = required_param('base_url', PARAM_TEXT);
     $data->auth_type           = required_param('auth_type', PARAM_ALPHA);
-    $data->auth_token          = optional_param('auth_token', '', PARAM_RAW);
+    $data->auth_token          = optional_param('auth_token', '', PARAM_TEXT);
     $data->timeout             = optional_param('timeout', 5, PARAM_INT);
     $data->max_retries         = optional_param('max_retries', 3, PARAM_INT);
     $data->retry_backoff       = optional_param('retry_backoff', 1, PARAM_INT);
@@ -66,8 +66,8 @@ if ($canmanage && $action === 'save' && confirm_sesskey()) {
         $amqphost = optional_param('amqp_host', 'localhost', PARAM_HOST);
         $amqpport = optional_param('amqp_port', 5672, PARAM_INT);
         $amqpuser = optional_param('amqp_user', 'guest', PARAM_TEXT);
-        $amqppass = optional_param('amqp_pass', 'guest', PARAM_RAW);
-        $amqpvhost = optional_param('amqp_vhost', '/', PARAM_RAW); // Allow slash.
+        $amqppass = optional_param('amqp_pass', 'guest', PARAM_TEXT);
+        $amqpvhost = optional_param('amqp_vhost', '/', PARAM_TEXT); // Allow slash.
         $amqpexchange = optional_param('ih-amqp_exchange', '', PARAM_TEXT); // Note ID prefix in form.
     }
 
@@ -196,74 +196,27 @@ $chartdatajs = [
 echo $OUTPUT->header();
 
 // Tabs navigation.
-echo html_writer::start_div('mb-4');
-echo html_writer::start_tag('ul', ['class' => 'nav nav-tabs']);
-echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(
-    new moodle_url('/local/integrationhub/index.php'),
-    get_string('services', 'local_integrationhub'),
-    ['class' => 'nav-link active']
-);
-echo html_writer::end_tag('li');
-echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(
-    new moodle_url('/local/integrationhub/rules.php'),
-    get_string('rules', 'local_integrationhub'),
-    ['class' => 'nav-link']
-);
-echo html_writer::end_tag('li');
-echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(
-    new moodle_url('/local/integrationhub/queue.php'),
-    get_string('queue', 'local_integrationhub'),
-    ['class' => 'nav-link']
-);
-echo html_writer::end_tag('li');
-echo html_writer::start_tag('li', ['class' => 'nav-item']);
-echo html_writer::link(
-    new moodle_url('/local/integrationhub/events.php'),
-    get_string('sent_events', 'local_integrationhub'),
-    ['class' => 'nav-link']
-);
-echo html_writer::end_tag('li');
-echo html_writer::end_tag('ul');
-echo html_writer::end_div();
+echo $OUTPUT->render_from_template('local_integrationhub/dashboard_tabs', [
+    'index_url'       => (new moodle_url('/local/integrationhub/index.php'))->out(false),
+    'rules_url'       => (new moodle_url('/local/integrationhub/rules.php'))->out(false),
+    'queue_url'       => (new moodle_url('/local/integrationhub/queue.php'))->out(false),
+    'events_url'      => (new moodle_url('/local/integrationhub/events.php'))->out(false),
+    'services_str'    => get_string('services', 'local_integrationhub'),
+    'rules_str'       => get_string('rules', 'local_integrationhub'),
+    'queue_str'       => get_string('queue', 'local_integrationhub'),
+    'sent_events_str' => get_string('sent_events', 'local_integrationhub'),
+]);
 
-// Charts section.
-echo html_writer::start_div('row mb-4');
+// Charts section — rendered via Mustache template (Output API).
+echo $OUTPUT->render_from_template('local_integrationhub/dashboard_charts', [
+    'integrationstatus_str' => get_string('integrationstatus', 'local_integrationhub'),
+    'latencytrend_str'      => get_string('latencytrend', 'local_integrationhub'),
+]);
 
-// Chart 1: Status.
-echo html_writer::start_div('col-md-4');
-echo html_writer::start_div('card');
-echo html_writer::tag('div', get_string('integrationstatus', 'local_integrationhub'), ['class' => 'card-header fw-bold']);
-echo html_writer::start_div('card-body', ['style' => 'height: 300px; position: relative;']);
-echo '<canvas id="ih-chart-status"></canvas>';
-echo html_writer::end_div();
-echo html_writer::end_div();
-echo html_writer::end_div();
-
-// Chart 2: Latency.
-echo html_writer::start_div('col-md-8');
-echo html_writer::start_div('card');
-echo html_writer::tag('div', get_string('latencytrend', 'local_integrationhub'), ['class' => 'card-header fw-bold']);
-echo html_writer::start_div('card-body', ['style' => 'height: 300px; position: relative;']);
-echo '<canvas id="ih-chart-latency"></canvas>';
-echo html_writer::end_div(); // Close card-body.
-echo html_writer::end_div(); // Close card.
-echo html_writer::end_div(); // Close col-md-8.
-echo html_writer::end_div(); // Close row (Charts Section).
-
-// Include Chart.js (Local) with UMD/AMD Hack.
-echo '<script>
-    var _old_define = window.define;
-    window.define = null;
-</script>';
-echo '<script src="' . new moodle_url('/local/integrationhub/assets/min/chart.umd.min.js') . '"></script>';
-echo '<script>
-    window.define = _old_define;
-</script>';
-
-// Chart.js local file is loaded below.
+// Load Chart.js via Output API instead of an inline <script> tag.
+// The UMD bundle is loaded as a plain JS file; the AMD module (dashboard.js)
+// guards its Chart usage with `typeof Chart !== 'undefined'`.
+$PAGE->requires->js(new moodle_url('/local/integrationhub/assets/min/chart.umd.min.js'));
 
 // Action buttons.
 echo html_writer::start_div('row mb-4');
@@ -368,30 +321,8 @@ echo "<option value='apikey' {$selectedapikey}>" .
 echo html_writer::end_tag('select');
 echo '</div>';
 
-// JavaScript to toggle visibility.
-echo '<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const typeSelect = document.getElementById("ih-type");
-    const authTypeContainer = document.getElementById("ih-auth_type").closest(".col-md-6");
-    const baseUrlContainer = document.querySelector(".ih-base-url-container");
-    const amqpBuilder = document.getElementById("ih-amqp-builder");
-
-    function toggleUi() {
-        if (typeSelect.value === "amqp") {
-            authTypeContainer.classList.add("d-none");
-            baseUrlContainer.classList.add("d-none");
-            amqpBuilder.classList.remove("d-none");
-        } else {
-            authTypeContainer.classList.remove("d-none");
-            baseUrlContainer.classList.remove("d-none");
-            amqpBuilder.classList.add("d-none");
-        }
-    }
-
-    typeSelect.addEventListener("change", toggleUi);
-    toggleUi();
-});
-</script>';
+// Type-toggle UI logic is handled by the AMD module local_integrationhub/dashboard
+// (updateUiForType / syncAmqpUrl). No inline <script> needed here.
 
 // AMQP Connection Builder (Conditional Visibility via JS).
 echo '<div id="ih-amqp-builder" class="col-12 d-none mb-3">';

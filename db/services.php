@@ -15,18 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * AJAX endpoint for the Integration Hub plugin.
+ * External service definitions for Integration Hub.
  *
- * @deprecated since 2.0.0 - Use Moodle External Services API instead.
  * @package    local_integrationhub
  * @copyright  2026 Integration Hub Contributors
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require(__DIR__ . '/../../config.php');
+defined('MOODLE_INTERNAL') || die();
 
-// Endpoint is deprecated. All AJAX calls should use the External Services API
-// (e.g. core/ajax calling local_integrationhub_preview_payload).
-http_response_code(410);
-echo json_encode(['success' => false, 'error' => 'This endpoint is deprecated. Use Moodle External Services API.']);
-exit;
+$functions = [
+    'local_integrationhub_preview_payload' => [
+        'classname'    => 'local_integrationhub\external\preview_payload',
+        'methodname'   => 'execute',
+        'description'  => 'Preview a payload template by interpolating mock event data.',
+        'type'         => 'read',
+        'ajax'         => true,
+        'capabilities' => 'local/integrationhub:manage',
+        'loginrequired' => true,
+    ],
+];

@@ -44,7 +44,7 @@ header('Content-Type: application/json');
 // Only accept POST.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['success' => false, 'error' => 'Method Not Allowed. Use POST.']);
+    echo json_encode(['success' => false, 'error' => get_string('webhook_method_not_allowed', 'local_integrationhub')]);
     exit;
 }
 
@@ -53,7 +53,7 @@ $serviceslug = optional_param('service', '', PARAM_ALPHANUMEXT);
 
 if (empty($serviceslug)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Missing required parameter: service']);
+    echo json_encode(['success' => false, 'error' => get_string('webhook_missing_service', 'local_integrationhub')]);
     exit;
 }
 
@@ -61,13 +61,13 @@ if (empty($serviceslug)) {
 $service = service_registry::get_service($serviceslug);
 if (!$service) {
     http_response_code(404);
-    echo json_encode(['success' => false, 'error' => 'Service not found']);
+    echo json_encode(['success' => false, 'error' => get_string('webhook_invalid_service', 'local_integrationhub')]);
     exit;
 }
 
 if (empty($service->enabled)) {
     http_response_code(403);
-    echo json_encode(['success' => false, 'error' => 'Service is disabled']);
+    echo json_encode(['success' => false, 'error' => get_string('webhook_service_disabled', 'local_integrationhub')]);
     exit;
 }
 
@@ -106,7 +106,7 @@ if (!empty($expectedtoken)) {
 
 if (!$authenticated) {
     http_response_code(403);
-    echo json_encode(['success' => false, 'error' => 'Invalid authentication token']);
+    echo json_encode(['success' => false, 'error' => get_string('webhook_invalid_token', 'local_integrationhub')]);
     exit;
 }
 
@@ -114,14 +114,14 @@ if (!$authenticated) {
 $rawbody = file_get_contents('php://input');
 if (empty($rawbody)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Empty request body']);
+    echo json_encode(['success' => false, 'error' => get_string('webhook_empty_body', 'local_integrationhub')]);
     exit;
 }
 
 $payload = json_decode($rawbody, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Invalid JSON: ' . json_last_error_msg()]);
+    echo json_encode(['success' => false, 'error' => get_string('webhook_invalid_json', 'local_integrationhub', json_last_error_msg())]);
     exit;
 }
 

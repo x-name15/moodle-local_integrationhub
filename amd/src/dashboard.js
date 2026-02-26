@@ -1,10 +1,36 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Dashboard AMD module for Integration Hub.
+ *
+ * Handles chart rendering (Chart.js) and service-form UI interactions
+ * (show/hide AMQP builder, type-toggle, AMQP URL sync).
+ *
+ * @module     local_integrationhub/dashboard
+ * @copyright  2026 Integration Hub Contributors
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 /* global Chart */
 define(
     ['core/notification'],
-    function(Notification) {
+    function (Notification) {
 
         return {
-            init: function(data, strings) {
+            init: function (data, strings) {
 
                 try {
                     const form = document.getElementById('ih-service-form');
@@ -12,7 +38,7 @@ define(
                     const btnCancel = document.getElementById('ih-btn-cancel');
 
                     if (btnAdd && form) {
-                        btnAdd.addEventListener('click', function() {
+                        btnAdd.addEventListener('click', function () {
                             const svcId = document.getElementById('ih-serviceid');
                             const ihForm = document.getElementById('ih-form');
 
@@ -35,7 +61,7 @@ define(
                     }
 
                     if (btnCancel && form) {
-                        btnCancel.addEventListener('click', function() {
+                        btnCancel.addEventListener('click', function () {
                             form.classList.add('d-none');
                             if (btnAdd) {
                                 btnAdd.classList.remove('d-none');
@@ -49,8 +75,16 @@ define(
                     const amqpBuilder = document.getElementById('ih-amqp-builder');
                     const baseUrlContainer =
                         document.querySelector('.ih-base-url-container');
+                    // authTypeContainer and responseQueueContainer were
+                    // previously toggled by an inline <script>; now handled here.
+                    const authTypeContainer = document.getElementById('ih-auth_type')
+                        ? document.getElementById('ih-auth_type').closest('.col-md-6')
+                        : null;
+                    const responseQueueContainer = document.getElementById('ih-response_queue')
+                        ? document.getElementById('ih-response_queue').closest('.col-md-6')
+                        : null;
 
-                    const updateUiForType = function() {
+                    const updateUiForType = function () {
                         const type = typeField.value || 'rest';
 
                         if (type === 'amqp') {
@@ -62,6 +96,14 @@ define(
 
                             if (baseUrlContainer) {
                                 baseUrlContainer.classList.add('d-none');
+                            }
+
+                            if (authTypeContainer) {
+                                authTypeContainer.classList.add('d-none');
+                            }
+
+                            if (responseQueueContainer) {
+                                responseQueueContainer.classList.add('d-none');
                             }
                         } else {
                             // If switching away from AMQP and the URL is an AMQP one, clear it.
@@ -78,10 +120,18 @@ define(
                             if (baseUrlContainer) {
                                 baseUrlContainer.classList.remove('d-none');
                             }
+
+                            if (authTypeContainer) {
+                                authTypeContainer.classList.remove('d-none');
+                            }
+
+                            if (responseQueueContainer) {
+                                responseQueueContainer.classList.remove('d-none');
+                            }
                         }
                     };
 
-                    const syncAmqpUrl = function() {
+                    const syncAmqpUrl = function () {
                         const host =
                             document.getElementById('ih-amqp_host').value ||
                             'localhost';
@@ -177,7 +227,7 @@ define(
                             updateUiForType
                         );
 
-                        typeField.addEventListener('change', function() {
+                        typeField.addEventListener('change', function () {
                             if (typeField.value === 'amqp') {
                                 syncAmqpUrl();
                             }
@@ -185,7 +235,7 @@ define(
 
                         document
                             .querySelectorAll('.ih-amqp-sync')
-                            .forEach(function(el) {
+                            .forEach(function (el) {
                                 el.addEventListener(
                                     'input',
                                     syncAmqpUrl

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<environment>
+    <plugin type="local" name="integrationhub">
+        <requires>
+            <php_extension name="sockets" level="required" />
+            <php_extension name="bcmath" level="optional" />
+        </requires>
+    </plugin>
+</environment>

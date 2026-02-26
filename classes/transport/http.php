@@ -59,48 +59,42 @@ class http implements contract
         $jsonpayload = !empty($payload) ? json_encode($payload) : '';
         $method = strtoupper($method) ?: 'POST';
 
-        // BYPASS: Use native PHP curl to avoid Moodle's SSRF blocking for local testing.
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, (int)$service->timeout);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, min((int)$service->timeout, 10));
+        // Use Moodle's curl wrapper to respect proxy settings and security controls.
+        $curl = new \curl();
+        $curl->setopt([
+            'CURLOPT_TIMEOUT'        => (int)$service->timeout,
+            'CURLOPT_CONNECTTIMEOUT' => min((int)$service->timeout, 10),
+            'CURLOPT_RETURNTRANSFER' => true,
+        ]);
 
-        // Method.
-        switch ($method) {
-            case 'POST':
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonpayload);
-                break;
-            case 'PUT':
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonpayload);
-                break;
-            case 'DELETE':
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonpayload);
-                break;
-            case 'GET':
-            default:
-                if (!empty($payload)) {
-                    $url .= '?' . http_build_query($payload);
-                    curl_setopt($ch, CURLOPT_URL, $url);
-                }
-                break;
+        // Set request headers.
+        foreach ($headers as $header) {
+            $curl->setHeader($header);
         }
 
-        // Headers.
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
+        // Dispatch by method.
         try {
-            $resp = curl_exec($ch);
-            $curlerr = curl_errno($ch);
-            $curlerrmsg = curl_error($ch);
-            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+            switch ($method) {
+                case 'POST':
+                    $resp = $curl->post($url, $jsonpayload);
+                    break;
+                case 'PUT':
+                    $resp = $curl->put($url, ['data' => $jsonpayload]);
+                    break;
+                case 'DELETE':
+                    $resp = $curl->delete($url, ['data' => $jsonpayload]);
+                    break;
+                case 'GET':
+                default:
+                    $resp = $curl->get($url, !empty($payload) ? $payload : []);
+                    break;
+            }
+
+            $curlerr = $curl->get_errno();
+            $httpcode = $curl->info['http_code'] ?? 0;
 
             if ($curlerr) {
-                throw new \Exception("cURL error {$curlerr} for {$url}: " . $curlerrmsg);
+                throw new \Exception("cURL error {$curlerr} for {$url}: " . $curl->error);
             }
 
             // Determine success (2xx).

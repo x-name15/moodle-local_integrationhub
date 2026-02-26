@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<libraries>
+    <library>
+        <location>vendor/php-amqplib</location>
+        <name>php-amqplib</name>
+        <version>3.x</version>
+        <license>LGPL-2.1</license>
+        <licenseversion>2.1</licenseversion>
+    </library>
+    <library>
+        <location>assets/min/chart.umd.min.js</location>
+        <name>Chart.js</name>
+        <version>4.x</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+</libraries>

@@ -24,26 +24,46 @@
 
 namespace local_integrationhub\privacy;
 
+use core_privacy\local\metadata\collection;
+
 /**
  * Privacy provider for the Integration Hub plugin.
  *
- * The Integration Hub does not store personal user data directly.
- * It acts as a gateway and only logs technical data required for
- * monitoring integrations. The administrator is responsible for
- * configuring compliant external integrations.
+ * The Integration Hub acts as a gateway that dispatches Moodle events to
+ * administrator-configured external services via HTTP/AMQP. Because event
+ * payloads may contain personal data (e.g. user IDs, course IDs), the plugin
+ * must declare that data can be exported to external locations whose URLs are
+ * defined by the site administrator in the plugin settings.
  *
  * @package    local_integrationhub
  * @copyright  2026 Integration Hub Contributors
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\null_provider
+class provider implements \core_privacy\local\metadata\provider
 {
     /**
-     * Get the language string identifier with a description of what data this plugin stores.
+     * Returns metadata about the data this plugin stores or transmits.
      *
-     * @return string The language string identifier.
+     * The plugin does not store personal data itself but forwards Moodle event
+     * data to external services configured by the site administrator. The exact
+     * destination URLs are admin-defined and may vary per installation.
+     *
+     * @param collection $collection The metadata collection to populate.
+     * @return collection The updated collection.
      */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
+    public static function get_metadata(collection $collection): collection {
+        $collection->add_external_location_link(
+            'external_services',
+            [
+                'eventname'  => 'privacy:metadata:external_services:eventname',
+                'objectid'   => 'privacy:metadata:external_services:objectid',
+                'userid'     => 'privacy:metadata:external_services:userid',
+                'courseid'   => 'privacy:metadata:external_services:courseid',
+                'payload'    => 'privacy:metadata:external_services:payload',
+            ],
+            'privacy:metadata:external_services'
+        );
+
+        return $collection;
     }
 }

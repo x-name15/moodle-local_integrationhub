@@ -1,0 +1,47 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    Chart containers for the Integration Hub dashboard.
+    The actual Chart.js rendering is handled by the AMD module
+    local_integrationhub/dashboard via $PAGE->requires->js_call_amd().
+
+    @template  local_integrationhub/dashboard_charts
+    @copyright 2026 Integration Hub Contributors
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+    Context variables:
+    * integrationstatus_str - Localised "Integration Status" heading
+    * latencytrend_str      - Localised "Latency Trend" heading
+}}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header fw-bold">{{integrationstatus_str}}</div>
+            <div class="card-body" style="height: 300px; position: relative;">
+                <canvas id="ih-chart-status"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header fw-bold">{{latencytrend_str}}</div>
+            <div class="card-body" style="height: 300px; position: relative;">
+                <canvas id="ih-chart-latency"></canvas>
+            </div>
+        </div>
+    </div>
+</div>

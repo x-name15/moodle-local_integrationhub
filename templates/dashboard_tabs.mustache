@@ -1,0 +1,49 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    Navigation tabs for the Integration Hub dashboard.
+
+    @template  local_integrationhub/dashboard_tabs
+    @copyright 2026 Integration Hub Contributors
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+    Context variables:
+    * index_url  - URL for the Services tab (active)
+    * rules_url  - URL for the Rules tab
+    * queue_url  - URL for the Queue tab
+    * events_url - URL for the Events tab
+    * services_str    - Localised label for "Services"
+    * rules_str       - Localised label for "Rules"
+    * queue_str       - Localised label for "Queue"
+    * sent_events_str - Localised label for "Sent Events"
+}}
+<div class="mb-4">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" href="{{index_url}}">{{services_str}}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{rules_url}}">{{rules_str}}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{queue_url}}">{{queue_str}}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{events_url}}">{{sent_events_str}}</a>
+        </li>
+    </ul>
+</div>

@@ -40,17 +40,47 @@ class queue_manager
             'nextruntime ASC'
         );
 
+        if (empty($tasks)) {
+            return [];
+        }
+
+        // Collect all rule IDs from task custom data (bulk preload — avoids N+1).
+        $ruleids = [];
+        foreach ($tasks as $task) {
+            $data = json_decode($task->customdata);
+            $rid = $data->ruleid ?? 0;
+            if ($rid > 0) {
+                $ruleids[$rid] = $rid;
+            }
+        }
+
+        // Bulk-fetch all referenced rules.
+        $rules = [];
+        if (!empty($ruleids)) {
+            $rules = $DB->get_records_list('local_integrationhub_rules', 'id', $ruleids);
+        }
+
+        // Bulk-fetch all referenced services.
+        $serviceids = [];
+        foreach ($rules as $rule) {
+            $serviceids[$rule->serviceid] = $rule->serviceid;
+        }
+        $services = [];
+        if (!empty($serviceids)) {
+            $services = $DB->get_records_list('local_integrationhub_svc', 'id', $serviceids);
+        }
+
+        // Enrich tasks from in-memory maps — zero additional DB queries.
         $results = [];
         foreach ($tasks as $task) {
             $data = json_decode($task->customdata);
+            $rid = $data->ruleid ?? 0;
+            $rule = $rules[$rid] ?? null;
+            $svc = ($rule && isset($services[$rule->serviceid])) ? $services[$rule->serviceid] : null;
 
-            // Enrich with rule/service info if available.
-            $rule = $DB->get_record('local_integrationhub_rules', ['id' => $data->ruleid ?? 0]);
-            $service = $rule ? $DB->get_record('local_integrationhub_svc', ['id' => $rule->serviceid]) : null;
-
-            $task->eventname = $rule->eventname ?? 'Unknown (Rule deleted)';
-            $task->servicename = $service->name ?? 'Unknown';
-            $task->ruleid = $data->ruleid ?? 0;
+            $task->eventname   = $rule->eventname ?? get_string('col_event', 'local_integrationhub');
+            $task->servicename = $svc->name ?? 'Unknown';
+            $task->ruleid      = $rid;
 
             $results[] = $task;
         }
@@ -110,30 +140,65 @@ class queue_manager
             'classname' => '\local_integrationhub\task\dispatch_event_task',
         ]);
 
-        $count = 0;
+        if (empty($tasks)) {
+            return 0;
+        }
+
+        // Collect all rule IDs referenced by tasks (bulk preload — avoids N+1).
+        $ruleids = [];
         foreach ($tasks as $task) {
             $data = json_decode($task->customdata);
-            $ruleid = $data->ruleid ?? 0;
-
-            $purge = false;
-            if ($ruleid <= 0) {
-                $purge = true;
-            } else {
-                $rule = $DB->get_record('local_integrationhub_rules', ['id' => $ruleid]);
-                if (!$rule) {
-                    $purge = true;
-                } else if (!$DB->record_exists('local_integrationhub_svc', ['id' => $rule->serviceid])) {
-                    // Rule exists but service is gone.
-                    $purge = true;
-                }
-            }
-
-            if ($purge) {
-                $DB->delete_records('task_adhoc', ['id' => $task->id]);
-                $count++;
+            $rid = $data->ruleid ?? 0;
+            if ($rid > 0) {
+                $ruleids[$rid] = $rid;
             }
         }
 
-        return $count;
+        // Bulk-fetch existing rules and their service IDs.
+        $existingrules = [];
+        $serviceids = [];
+        if (!empty($ruleids)) {
+            $existingrules = $DB->get_records_list('local_integrationhub_rules', 'id', $ruleids, '', 'id,serviceid');
+            foreach ($existingrules as $r) {
+                $serviceids[$r->serviceid] = $r->serviceid;
+            }
+        }
+
+        // Bulk-fetch existing services.
+        $existingservices = [];
+        if (!empty($serviceids)) {
+            $existingservices = $DB->get_records_list('local_integrationhub_svc', 'id', $serviceids, '', 'id');
+        }
+
+        // Identify orphan task IDs from in-memory maps — zero additional DB queries.
+        $orphanids = [];
+        foreach ($tasks as $task) {
+            $data = json_decode($task->customdata);
+            $rid = $data->ruleid ?? 0;
+
+            $isorphan = false;
+            if ($rid <= 0) {
+                $isorphan = true;
+            } else if (!isset($existingrules[$rid])) {
+                $isorphan = true;
+            } else if (!isset($existingservices[$existingrules[$rid]->serviceid])) {
+                // Rule exists but its service is gone.
+                $isorphan = true;
+            }
+
+            if ($isorphan) {
+                $orphanids[] = $task->id;
+            }
+        }
+
+        if (empty($orphanids)) {
+            return 0;
+        }
+
+        // Single bulk DELETE for all orphan task IDs.
+        [$insql, $inparams] = $DB->get_in_or_equal($orphanids);
+        $DB->delete_records_select('task_adhoc', "id {$insql}", $inparams);
+
+        return count($orphanids);
     }
 }

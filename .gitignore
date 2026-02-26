@@ -1,16 +1,6 @@
-# Dependencias de Composer (se instalan con `composer install`)
 /vendor/
-
-# Archivos compilados de AMD (se generan con `grunt amd`)
-/amd/build/
-
-# Node modules (si usas Grunt/ESLint localmente)
 /node_modules/
-
-# Archivos de test/desarrollo que no son parte del plugin
 /test/
-
-# Docs de desarrollo interno
 /docs/old/
 /docs/preguntas.md
 /docs/preguntas2.md
@@ -30,3 +20,4 @@ error_ci(1).txt
 error_ci.txt
 /moodle_cs
 CodeSniffer.conf
+/issues_resolver/
