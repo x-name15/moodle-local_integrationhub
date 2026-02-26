@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Original Repository Name Changed**: Name changed to moodle-local_integrationhub for consistent developer experience
 
 ### Security
-- **PARAM_RAW replaced** (`index.php`): `base_url` now uses `PARAM_TEXT`, `auth_token` / `amqp_pass` / `amqp_vhost` use `PARAM_TEXT`. Eliminates XSS/injection surface flagged in Moodle official plugin review (issue #1/#2).
-- **curl_init() removed** (`classes/transport/http.php`): Replaced direct PHP curl with Moodle's `\curl` wrapper class. Ensures proxy configuration and SSRF protections set by site admins are fully respected (issue #3/#4).
+- **PARAM_RAW replaced** (`index.php`): `base_url` now uses `PARAM_TEXT`, `auth_token` / `amqp_pass` / `amqp_vhost` use `PARAM_TEXT`. Eliminates XSS/injection surface flagged in Moodle official plugin review (issue #3).
+- **curl_init() removed** (`classes/transport/http.php`): Replaced direct PHP curl with Moodle's `\curl` wrapper class. Ensures proxy configuration and SSRF protections set by site admins are fully respected (issue #9).
 
 ### Fixed
 - **Hard-coded strings** (`webhook.php`): All API error messages now use `get_string()` via the Moodle string API, enabling translation (issue #8). New lang strings added to all 5 locales (en, es, fr, it, pt_br).
