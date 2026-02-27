@@ -30,20 +30,20 @@ define(
         'core/modal_events',
         'core/notification'
     ],
-    function (
+    function(
         $,
         ModalFactory,
         ModalEvents,
         Notification
     ) {
         return {
-            init: function () {
+            init: function() {
                 $('body')
                     .off('click.ihpayload')
                     .on(
                         'click.ihpayload',
                         '.ih-view-payload',
-                        function (e) {
+                        function(e) {
                             e.preventDefault();
                             var trigger = $(this);
                             var payload = trigger.attr('data-payload');
@@ -58,13 +58,13 @@ define(
                                     })
                                     .text(payload)
                             })
-                                .then(function (modal) {
+                                .then(function(modal) {
 
                                     modal.show();
 
                                     modal.getRoot().on(
                                         ModalEvents.hidden,
-                                        function () {
+                                        function() {
                                             modal.destroy();
                                         }
                                     );

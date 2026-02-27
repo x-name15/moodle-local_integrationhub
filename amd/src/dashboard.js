@@ -27,10 +27,10 @@
 /* global Chart */
 define(
     ['core/notification'],
-    function (Notification) {
+    function(Notification) {
 
         return {
-            init: function (data, strings) {
+            init: function(data, strings) {
 
                 try {
                     const form = document.getElementById('ih-service-form');
@@ -38,7 +38,7 @@ define(
                     const btnCancel = document.getElementById('ih-btn-cancel');
 
                     if (btnAdd && form) {
-                        btnAdd.addEventListener('click', function () {
+                        btnAdd.addEventListener('click', function() {
                             const svcId = document.getElementById('ih-serviceid');
                             const ihForm = document.getElementById('ih-form');
 
@@ -61,7 +61,7 @@ define(
                     }
 
                     if (btnCancel && form) {
-                        btnCancel.addEventListener('click', function () {
+                        btnCancel.addEventListener('click', function() {
                             form.classList.add('d-none');
                             if (btnAdd) {
                                 btnAdd.classList.remove('d-none');
@@ -75,8 +75,6 @@ define(
                     const amqpBuilder = document.getElementById('ih-amqp-builder');
                     const baseUrlContainer =
                         document.querySelector('.ih-base-url-container');
-                    // authTypeContainer and responseQueueContainer were
-                    // previously toggled by an inline <script>; now handled here.
                     const authTypeContainer = document.getElementById('ih-auth_type')
                         ? document.getElementById('ih-auth_type').closest('.col-md-6')
                         : null;
@@ -84,7 +82,7 @@ define(
                         ? document.getElementById('ih-response_queue').closest('.col-md-6')
                         : null;
 
-                    const updateUiForType = function () {
+                    const updateUiForType = function() {
                         const type = typeField.value || 'rest';
 
                         if (type === 'amqp') {
@@ -131,7 +129,7 @@ define(
                         }
                     };
 
-                    const syncAmqpUrl = function () {
+                    const syncAmqpUrl = function() {
                         const host =
                             document.getElementById('ih-amqp_host').value ||
                             'localhost';
@@ -227,7 +225,7 @@ define(
                             updateUiForType
                         );
 
-                        typeField.addEventListener('change', function () {
+                        typeField.addEventListener('change', function() {
                             if (typeField.value === 'amqp') {
                                 syncAmqpUrl();
                             }
@@ -235,7 +233,7 @@ define(
 
                         document
                             .querySelectorAll('.ih-amqp-sync')
-                            .forEach(function (el) {
+                            .forEach(function(el) {
                                 el.addEventListener(
                                     'input',
                                     syncAmqpUrl
