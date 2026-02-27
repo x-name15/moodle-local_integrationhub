@@ -1,16 +1,22 @@
-<h1><img src="pix/icon.png" width="40" height="40"> Moodle Integration Hub</h1>
+<h1>
+  <img src="pix/icon.png" width="40" height="40">
+  Integration Hub for Moodle™
+</h1>
 
-A centralized integration layer for Moodle — connect any Moodle event to any external service without writing boilerplate code.
+A centralized integration layer for Moodle™ that allows connecting platform events to external services without writing boilerplate code.
 
-[![Moodle](https://img.shields.io/badge/Moodle-4.1%2B-orange)](https://moodle.org)
-[![PHP](https://img.shields.io/badge/PHP-8.0%2B-blue)](https://php.net)
+[![Moodle](https://img.shields.io/badge/Moodle-4.1%2B-orange)](https://moodle.org)  
+[![PHP](https://img.shields.io/badge/PHP-8.0%2B-blue)](https://php.net)  
 [![License](https://img.shields.io/badge/License-GPL%20v3-green)](LICENSE)
 
 ---
 
 ## Overview
 
-**Moodle Integration Hub (MIH)** is a local plugin that acts as a centralized gateway for integrations. It handles HTTP logic, authentication, retries, and error logging, allowing you to configured everything from a dashboard.
+**Integration Hub for Moodle™ (MIH)** is a local plugin that provides a centralized gateway for external integrations.  
+It manages HTTP communication, authentication, retries, and error logging from a single dashboard.
+
+> This plugin is not affiliated with or endorsed by Moodle Pty Ltd.
 
 **Key Features:**
 - **Service Gateway:** Reusable API for plugins.
@@ -42,14 +48,26 @@ A centralized integration layer for Moodle — connect any Moodle event to any e
 # 1. Install plugin
 cp -r integrationhub /path/to/moodle/local/
 
-# 2. Install dependencies (optional, for AMQP)
-cd /path/to/moodle/local/integrationhub && composer install
-
-# 3. Upgrade Moodle
+# 2. Upgrade Moodle
 php admin/cli/upgrade.php
 ```
 
-### 🗺️ Future Roadmap?
+### External Dependencies
+
+This dependency is not bundled with the plugin and must be installed manually:
+
+```bash
+cd local/integrationhub
+composer install --no-dev
+```
+
+> [!NOTE]
+> If Composer dependencies are not installed, AMQP transport will be unavailable but the plugin will continue to function for REST and SOAP integrations.
+
+---
+
+## 🗺️ Future Roadmap
+
 - [ ] Webhook Firewall
 - [ ] Better stability
 - [ ] Webhook ingress (receive events from external services)
@@ -58,6 +76,7 @@ php admin/cli/upgrade.php
 - [ ] Advanced retry policies (jitter, custom strategies)
 
 ---
+
 *License: GPL v3*
 
 Made with ❤️ by Mr Jacket
